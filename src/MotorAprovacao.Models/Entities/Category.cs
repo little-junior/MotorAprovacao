@@ -12,7 +12,6 @@ namespace MotorAprovacao.Models.Entities
 
         public int Id { get; set; }
         public string Name { get; private set; }
-        public decimal MaximumApproval { get; private set; }
-        public decimal MinimalDisapproval { get; private set; }
+        public CategoryRules CategoryRules { get; set; }
     }
 }
