@@ -1,6 +1,7 @@
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using MotorAprovacao.WebApi.AuthServices;
 using System.Text;
 
 namespace MotorAprovacao.WebApi
@@ -44,6 +45,8 @@ namespace MotorAprovacao.WebApi
 
                 };
             });
+
+            builder.Services.AddScoped<ITokenService, TokenService>();
             
             var app = builder.Build();
 
