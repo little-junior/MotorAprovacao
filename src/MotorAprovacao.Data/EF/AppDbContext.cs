@@ -16,7 +16,7 @@ public class AppDbContext : DbContext
     {
     }
 
-    public DbSet<RequestDocument> ReturnDocuments { get; set; }
+    public DbSet<RefundDocument> ReturnDocuments { get; set; }
 
     public DbSet<CategoryRules> Rules { get; set; }
 
@@ -27,7 +27,7 @@ public class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<RequestDocument>(builder =>
+        modelBuilder.Entity<RefundDocument>(builder =>
         {
             builder.HasKey(s => s.Id);
             builder.Property(s => s.Description).HasMaxLength(MaxCharsByDocumentoDescription);
