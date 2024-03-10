@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace MotorAprovacao.Models.Entities
 {
-    public class RequestDocument
+    public class RefundDocument
     {
-        public RequestDocument() { }
+        public RefundDocument() { }
 
-        public RequestDocument(decimal total, int categoryId, string description) 
+        public RefundDocument(decimal total, int categoryId, string description) 
         {
             Id = Guid.NewGuid();
             CreatedAt = DateTime.Now;
