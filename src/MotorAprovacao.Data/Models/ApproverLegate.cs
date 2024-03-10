@@ -1,8 +1,8 @@
-﻿namespace MotorAprovacaoME.Data.Models;
+﻿namespace MotorAprovacaoME.Data;
 
-public class Approver
+public class ApproverLegate
 {
-    public Approver()
+    public ApproverLegate()
     {
         CreatedAt = DateTime.Now;
     }

@@ -1,8 +1,8 @@
-﻿namespace MotorAprovacaoME.Data.Models;
+﻿namespace MotorAprovacaoME.Data;
 
-public class Category
+public class CategoryLegate
 {
-    public Category()
+    public CategoryLegate()
     {
         CreatedAt = DateTime.Now;
     }
