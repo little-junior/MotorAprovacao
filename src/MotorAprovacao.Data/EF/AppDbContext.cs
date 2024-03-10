@@ -16,7 +16,7 @@ public class AppDbContext : DbContext
     {
     }
 
-    public DbSet<RefundDocument> ReturnDocuments { get; set; }
+    public DbSet<RefundDocument> RefundDocuments { get; set; }
 
     public DbSet<CategoryRules> Rules { get; set; }
 

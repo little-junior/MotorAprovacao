@@ -1,46 +1,42 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MotorAprovacao.Data.EF;
+using MotorAprovacao.Models.Entities;
 using MotorAprovacao.Models.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static MotorAprovacao.Data.Models.RefundRepository;
 
 namespace MotorAprovacao.Data.Models
 {
 
-    public class RefundRepository : IRequestDocumentRepository
+    public class RefundRepository : IRefundRepository
     {
-        private readonly MyContext _context;
+        private readonly AppDbContext _context;
 
-        public RequestDocumentRepository(MyContext context)
+        public RefundRepository(AppDbContext context)
         {
             _context = context;
         }
 
-        public async Task Add(RequestDocument document)
+        public async Task Add(RefundDocument document)
         {
-            await _context.RequestDocuments.AddAsync(document);
+            await _context.RefundDocuments.AddAsync(document);
         }
 
-        public async Task<RequestDocument> GetById(Guid id)
+        public async Task<RefundDocument> GetById(Guid id)
         {
-            var document = await _context.RequestDocuments.SingleOrDefaultAsync(document => document.Id == id);
+            var document = await _context.RefundDocuments.SingleOrDefaultAsync(document => document.Id == id);
 
             return document;
         }
 
-        public async Task<IEnumerable<RequestDocument>> GetByStatus(Status status)
+        public async Task<IEnumerable<RefundDocument>> GetByStatus(Status status)
         {
-            var documents = await Task.FromResult(_context.RequestDocuments.Where(document => document.Status == status));
+            var documents = await Task.FromResult(_context.RefundDocuments.Where(document => document.Status == status));
 
             return documents;
         }
 
-        public async Task Update(RequestDocument document)
+        public async Task Update(RefundDocument document)
         {
-            await Task.Run(() => _context.RequestDocuments.Update(document));
+            await Task.Run(() => _context.RefundDocuments.Update(document));
         }
 
         public async Task<bool> SaveChanges()
@@ -50,3 +46,4 @@ namespace MotorAprovacao.Data.Models
             return saveChangesResult > 0;
         }
     }
+}
