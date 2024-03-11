@@ -24,7 +24,7 @@ namespace MotorAprovacao.Models.Entities
         public Guid Id { get; private set; }
         public decimal Total { get; private set; }
         public int CategoryId { get; private set; }
-        public Category? Category { get; private set; }
+        public Category Category { get; private set; }
         public string Description { get; private set; }
         public Status Status { get; private set; }
         public DateTime CreatedAt { get; private set; }

@@ -1,4 +1,9 @@
 
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using MotorAprovacao.Data.EF;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+
 namespace MotorAprovacao.WebApi
 {
     public class Program
@@ -13,6 +18,10 @@ namespace MotorAprovacao.WebApi
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
+                x => x.MigrationsAssembly("MotorAprovacao.WebApi")));
 
             var app = builder.Build();
 
