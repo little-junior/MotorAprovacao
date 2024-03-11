@@ -1,6 +1,8 @@
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using MotorAprovacao.WebApi.AuthContextMock;
 using MotorAprovacao.WebApi.AuthServices;
 using System.Text;
 
@@ -18,6 +20,12 @@ namespace MotorAprovacao.WebApi
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            //Injection suggestion required for partial delivery day 12
+            builder.Services.AddIdentity<IdentityUser, IdentityRole>().
+                            AddEntityFrameworkStores<AppDbContextMock>
+                            ().AddDefaultTokenProviders();
+
 
             //Configuração de autenticação 
             var secretKey = builder.Configuration["JWT:SecretKey"]
