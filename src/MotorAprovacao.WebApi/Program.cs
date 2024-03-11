@@ -20,7 +20,7 @@ namespace MotorAprovacao.WebApi
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
+                options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection"),
                 x => x.MigrationsAssembly("MotorAprovacao.WebApi")));
 
             var app = builder.Build();
