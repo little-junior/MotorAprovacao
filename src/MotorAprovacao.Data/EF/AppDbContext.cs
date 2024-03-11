@@ -44,6 +44,12 @@ public class AppDbContext : DbContext
                 .HasForeignKey<CategoryRules>(s => s.CategoryId);
             builder.Property(s => s.MaximumToApprove).HasMaxLength(MaxIntByAprovacao);
             builder.Property(s => s.MinimumToDisapprove).HasMaxLength(MinIntByReprovacao);
+            builder.HasData(new List<CategoryRules>()
+            {
+                new CategoryRules(1, 1, 100m, 1000m),
+                new CategoryRules(2, 2, 500m, 1000m),
+                new CategoryRules(3, 3, 500m, 1000m)
+            });
         });
 
         modelBuilder.Entity<Category>(builder =>
@@ -53,6 +59,12 @@ public class AppDbContext : DbContext
                 .WithOne(r => r.Category)
                 .IsRequired();
             builder.Property(s => s.Name).HasMaxLength(MaxCharsByCategory);
+            builder.HasData(new List<Category>()
+                {
+                    new Category(1, "Outros"),
+                    new Category(2, "Alimentação"),
+                    new Category(3, "Transporte")
+                });
         });
     }
 

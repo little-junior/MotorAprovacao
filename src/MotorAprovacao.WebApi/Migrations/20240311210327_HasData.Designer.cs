@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MotorAprovacao.Data.EF;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MotorAprovacao.WebApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240311210327_HasData")]
+    partial class HasData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,21 +90,21 @@ namespace MotorAprovacao.WebApi.Migrations
                         new
                         {
                             Id = 1,
-                            CategoryId = 1,
+                            CategoryId = 0,
                             MaximumToApprove = 100m,
                             MinimumToDisapprove = 1000m
                         },
                         new
                         {
                             Id = 2,
-                            CategoryId = 2,
+                            CategoryId = 0,
                             MaximumToApprove = 500m,
                             MinimumToDisapprove = 1000m
                         },
                         new
                         {
                             Id = 3,
-                            CategoryId = 3,
+                            CategoryId = 0,
                             MaximumToApprove = 500m,
                             MinimumToDisapprove = 1000m
                         });
