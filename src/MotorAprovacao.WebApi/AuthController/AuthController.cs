@@ -71,5 +71,33 @@ namespace MotorAprovacao.WebApi.AuthController
                 return Unauthorized();
             }
         }
+
+        [HttpPost]
+        [Route("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterDTO register)
+        {
+            var userExists = await _userManager.FindByNameAsync(register.UserName);
+
+            if (userExists != null)
+            {
+                return BadRequest();
+            }
+
+            ApplicationUser user = new()
+            {
+                Email = register.Email,
+                SecurityStamp = Guid.NewGuid().ToString(),
+                UserName = register.UserName
+            };
+            
+
+            var result = await _userManager.CreateAsync(user, register.Password);
+            if (!result.Succeeded)
+            {
+                return BadRequest();
+            }
+
+            return Ok(result);
+        }
     }
 }
