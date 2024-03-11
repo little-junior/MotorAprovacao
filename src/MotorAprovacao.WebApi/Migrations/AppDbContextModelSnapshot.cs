@@ -48,7 +48,7 @@ namespace MotorAprovacao.WebApi.Migrations
                         new
                         {
                             Id = 2,
-                            Name = "Alimentação"
+                            Name = "Hospedagem"
                         },
                         new
                         {

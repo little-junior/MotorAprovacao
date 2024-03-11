@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MotorAprovacao.WebApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240311210610_HasDataUpdate")]
-    partial class HasDataUpdate
+    [Migration("20240311233156_NewHasData")]
+    partial class NewHasData
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -51,7 +51,7 @@ namespace MotorAprovacao.WebApi.Migrations
                         new
                         {
                             Id = 2,
-                            Name = "Alimentação"
+                            Name = "Hospedagem"
                         },
                         new
                         {

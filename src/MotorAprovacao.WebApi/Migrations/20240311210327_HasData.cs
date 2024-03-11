@@ -37,9 +37,9 @@ namespace MotorAprovacao.WebApi.Migrations
                 columns: new[] { "Id", "CategoryId", "MaximumToApprove", "MinimumToDisapprove" },
                 values: new object[,]
                 {
-                    { 1, 0, 100m, 1000m },
-                    { 2, 0, 500m, 1000m },
-                    { 3, 0, 500m, 1000m }
+                    { 1, 1, 100m, 1000m },
+                    { 2, 2, 500m, 1000m },
+                    { 3, 3, 500m, 1000m }
                 });
         }
 
