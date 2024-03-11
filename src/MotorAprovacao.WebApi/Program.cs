@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+
 using MotorAprovacao.WebApi.AuthContextMock;
 using MotorAprovacao.WebApi.AuthServices;
 using System.Text;
@@ -21,8 +22,8 @@ namespace MotorAprovacao.WebApi
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            //Injection suggestion required for partial delivery day 12
-            builder.Services.AddIdentity<IdentityUser, IdentityRole>().
+            //Injection suggestion required for partial delivery day 12 corrigir implementação dos using
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>().
                             AddEntityFrameworkStores<AppDbContextMock>
                             ().AddDefaultTokenProviders();
 
