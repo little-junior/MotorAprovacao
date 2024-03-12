@@ -1,4 +1,6 @@
-﻿using MotorAprovacao.Models.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using MotorAprovacao.Data.EF;
+using MotorAprovacao.Models.Entities;
 using MotorAprovacao.Models.Enums;
 using System;
 using System.Collections.Generic;
