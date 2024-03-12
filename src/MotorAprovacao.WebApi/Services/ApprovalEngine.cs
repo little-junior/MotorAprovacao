@@ -39,13 +39,14 @@ namespace MotorAprovacao.WebApi.Services
             if (refundTotal <= maxApprovalCategory)
             {
                 document.Approve();
-                return;
             }
-
-            if (refundTotal > minDisapprovalCategory)
+            else if (refundTotal > minDisapprovalCategory)
             {
                 document.Disapprove();
-                return;
+            }
+            else
+            {
+                document.PutOnApproval();
             }
         }
     }
