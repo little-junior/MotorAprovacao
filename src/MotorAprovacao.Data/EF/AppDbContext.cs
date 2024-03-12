@@ -14,6 +14,7 @@ public class AppDbContext : DbContext
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
     }
 
     public DbSet<RefundDocument> RefundDocuments { get; set; }
@@ -51,7 +52,7 @@ public class AppDbContext : DbContext
             builder.HasData(new List<Category>()
             {
             new Category(1, "Outros"),
-            new Category(2, "Hospedagem"),
+            new Category(2, "Alimentacao"),
             new Category(3, "Transporte"),
             });
         });

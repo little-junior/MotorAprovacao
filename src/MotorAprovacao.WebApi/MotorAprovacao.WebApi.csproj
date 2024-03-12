@@ -22,10 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\MotorAprovacao.Data\MotorAprovacao.Data.csproj" />
     <ProjectReference Include="..\MotorAprovacao.Models\MotorAprovacao.Models.csproj" />
   </ItemGroup>

@@ -8,8 +8,8 @@ namespace MotorAprovacao.Models.Enums
 {
     public enum Status
     {
-        OnApproval,
-        Approved,
-        Disapproved
+        OnApproval = 0,
+        Approved = 1,
+        Disapproved = 2
     }
 }
