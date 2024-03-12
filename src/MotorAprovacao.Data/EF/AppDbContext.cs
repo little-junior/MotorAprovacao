@@ -1,10 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using MotorAprovacao.Models.Entities;
 using System.Reflection.Emit;
 
 namespace MotorAprovacao.Data.EF;
 
-public class AppDbContext : DbContext
+public class AppDbContext : IdentityDbContext
 {
     const int MaxCharsByDocumentoDescription = 200;
     const int MaxCharsByCategory = 70;
@@ -20,6 +22,8 @@ public class AppDbContext : DbContext
 
     public DbSet<CategoryRules> Rules { get; set; }
     public DbSet<Category> Categories { get; set; }
+
+    public DbSet<ApplicationUser> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -40,6 +44,15 @@ public class AppDbContext : DbContext
             builder.Property(s => s.Total).IsRequired().HasPrecision(5);
             builder.Property(s => s.CreatedAt).IsRequired().ValueGeneratedOnAdd();
             builder.Property(s => s.StatusDeterminedAt).IsRequired().ValueGeneratedOnUpdate();
+        });
+
+        modelBuilder.Entity<IdentityUser>(builder =>
+        {
+            builder.HasKey(s => s.Id);
+
+            builder.Property(s => s.UserName);
+            builder.Property(s => s.Email);
+
         });
 
         modelBuilder.Entity<Category>(builder =>
@@ -72,6 +85,8 @@ public class AppDbContext : DbContext
                 new CategoryRules(2, 2, 500m, 1000m),
                 new CategoryRules(3, 3, 500m, 1000m),
             });
+
+            base.OnModelCreating(modelBuilder);
         });
 
     }

@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using MotorAprovacao.Models.AuthModels;
-using MotorAprovacao.WebApi.AuthContextMock;
 using MotorAprovacao.WebApi.AuthServices;
 using System.Net;
 using System.Text;
@@ -15,6 +13,7 @@ using MotorAprovacao.Data.EF;
 using MotorAprovacao.Data.Repositories;
 using MotorAprovacao.WebApi.Services;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using MotorAprovacao.Models.Entities;
 
 namespace MotorAprovacao.WebApi
 {
@@ -72,13 +71,17 @@ namespace MotorAprovacao.WebApi
 
             //Injection suggestion required for partial delivery day 12 corrigir implementação dos using
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>().
-                            AddEntityFrameworkStores<AppDbContextMock>
+                            AddEntityFrameworkStores<AppDbContext>
                             ().AddDefaultTokenProviders();
 
 
             //Configuração de autenticação 
-            var secretKey = builder.Configuration["JWT:SecretKey"]
-                            ?? throw new ArgumentException("Invalid secret key!");
+            var secretKey = builder.Configuration.GetSection("JWT:SecretKey").Value;
+            if (string.IsNullOrEmpty(secretKey))
+            {
+                throw new ArgumentException("Invalid secret key!");
+            }
+
 
             builder.Services.AddAuthentication(options =>
             {
