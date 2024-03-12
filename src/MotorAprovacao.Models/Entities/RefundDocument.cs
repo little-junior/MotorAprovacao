@@ -14,7 +14,7 @@ namespace MotorAprovacao.Models.Entities
         public RefundDocument(decimal total, int categoryId, string description) 
         {
             Id = Guid.NewGuid();
-            CreatedAt = DateTime.UtcNow;
+            CreatedAt = DateTime.Now;
             Total = total;
             CategoryId = categoryId;
             Description = description;
