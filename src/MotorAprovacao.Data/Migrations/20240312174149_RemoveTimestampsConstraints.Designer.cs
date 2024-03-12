@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MotorAprovacao.Data.EF;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MotorAprovacao.WebApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240312174149_RemoveTimestampsConstraints")]
+    partial class RemoveTimestampsConstraints
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,7 +51,7 @@ namespace MotorAprovacao.WebApi.Migrations
                         new
                         {
                             Id = 2,
-                            Name = "Alimentacao"
+                            Name = "Hospedagem"
                         },
                         new
                         {
@@ -117,7 +120,6 @@ namespace MotorAprovacao.WebApi.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
@@ -129,7 +131,6 @@ namespace MotorAprovacao.WebApi.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("StatusDeterminedAt")
-                        .ValueGeneratedOnUpdate()
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<decimal>("Total")
