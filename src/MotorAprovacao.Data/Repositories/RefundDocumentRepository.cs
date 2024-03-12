@@ -33,7 +33,7 @@ namespace MotorAprovacao.Data.Repositories
 
         public async Task<IEnumerable<RefundDocument>> GetByStatus(Status status)
         {
-            var documents = await Task.FromResult(_context.RefundDocuments.Where(document => document.Status == status));
+            var documents = await _context.RefundDocuments.Where(document => document.Status == status).ToListAsync();
 
             return documents;
         }
