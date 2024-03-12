@@ -86,6 +86,12 @@ namespace MotorAprovacao.WebApi
                 };
             });
 
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("ManagerOnly", policy => policy.RequireRole("Gerente"));
+                options.AddPolicy("TraineeOnly", policy => policy.RequireRole("Estagiário(a)")
+                //options.AddPolicy("AdminOnly", policy=> policy.RequireRole("Administrador").RequireClaim("id" "ME"))
+            })
             builder.Services.AddScoped<ITokenService, TokenService>();
             
             var app = builder.Build();
