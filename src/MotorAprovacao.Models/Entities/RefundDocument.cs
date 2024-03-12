@@ -28,24 +28,29 @@ namespace MotorAprovacao.Models.Entities
         public string Description { get; private set; }
         public Status Status { get; private set; }
         public DateTime CreatedAt { get; private set; }
-        public DateTime StatusDeterminedAt { get; private set; }
+        public DateTime? StatusDeterminedAt { get; private set; }
 
         public void Approve()
         {
-            Status = Status.Approved;
-            SetStatusDeterminedAt();
+            if (StatusDeterminedAt == null)
+            {
+                Status = Status.Approved;
+                SetStatusDeterminedAt();
+            }
         }
 
         public void Disapprove()
         {
-            Status = Status.Disapproved;
-            SetStatusDeterminedAt();
+            if (StatusDeterminedAt == null)
+            {
+                Status = Status.Disapproved;
+                SetStatusDeterminedAt();
+            }
         }
 
         public void PutOnApproval()
         {
             Status = Status.OnApproval;
-            SetStatusDeterminedAt();
         }
 
         private void SetStatusDeterminedAt()
