@@ -27,6 +27,7 @@ namespace MotorAprovacao.WebApi
             builder.Services.AddScoped<IRefundDocumentRepository, RefundDocumentRepository>();
             builder.Services.AddScoped<IRefundDocumentService,  RefundDocumentService>();
             builder.Services.AddScoped<IApprovalEngine,  ApprovalEngine>();
+            builder.Services.AddScoped<ICategoryRulesRepository, CategoryRulesRepository>();
 
             var app = builder.Build();
 
