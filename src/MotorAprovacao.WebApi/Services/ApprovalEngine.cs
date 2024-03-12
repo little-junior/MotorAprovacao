@@ -1,4 +1,6 @@
-﻿using MotorAprovacao.Models.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using MotorAprovacao.Data.EF;
+using MotorAprovacao.Models.Entities;
 
 namespace MotorAprovacao.WebApi.Services
 {
@@ -19,14 +21,14 @@ namespace MotorAprovacao.WebApi.Services
 
             if (categoryRules != null)
             {
-                maxApprovalCategory = categoryRules.MaximumApproval;
-                minDisapprovalCategory = categoryRules.MinimalDisapproval;
+                maxApprovalCategory = categoryRules.MaximumToApprove;
+                minDisapprovalCategory = categoryRules.MinimumToDisapprove;
             }
             else
             {
                 var defaultCategoryRules = await _context.Rules.FirstOrDefaultAsync(rule => rule.CategoryId == 1);
-                maxApprovalCategory = defaultCategoryRules.MaximumApproval;
-                minDisapprovalCategory = defaultCategoryRules.MinimalDisapproval;
+                maxApprovalCategory = defaultCategoryRules.MaximumToApprove;
+                minDisapprovalCategory = defaultCategoryRules.MinimumToDisapprove;
             }
 
             decimal requestTotal = document.Total;
