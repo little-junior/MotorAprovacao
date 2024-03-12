@@ -1,16 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MotorAprovacao.Data.EF;
+using MotorAprovacao.Data.Repositories;
 using MotorAprovacao.Models.Entities;
 
 namespace MotorAprovacao.WebApi.Services
 {
     public class ApprovalEngine : IApprovalEngine
     {
-        private readonly AppDbContext _context;
+        private readonly ICategoryRulesRepository _repository;
 
-        public ApprovalEngine(AppDbContext context)
+        public ApprovalEngine(ICategoryRulesRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         const int OutrosCategoryId = 1;
@@ -19,7 +20,7 @@ namespace MotorAprovacao.WebApi.Services
         {
             decimal maxApprovalCategory, minDisapprovalCategory;
 
-            var categoryRules = await _context.Rules.FirstOrDefaultAsync(rule => rule.CategoryId == document.CategoryId);
+            var categoryRules = await _repository.GetById(document.CategoryId);
 
             if (categoryRules != null)
             {
@@ -28,7 +29,7 @@ namespace MotorAprovacao.WebApi.Services
             }
             else
             {
-                var defaultCategoryRules = await _context.Rules.FirstOrDefaultAsync(rule => rule.CategoryId == OutrosCategoryId);
+                var defaultCategoryRules = await _repository.GetById(OutrosCategoryId);
                 maxApprovalCategory = defaultCategoryRules.MaximumToApprove;
                 minDisapprovalCategory = defaultCategoryRules.MinimumToDisapprove;
             }
