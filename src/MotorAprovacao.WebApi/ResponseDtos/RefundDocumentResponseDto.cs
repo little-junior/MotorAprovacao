@@ -14,12 +14,9 @@ namespace MotorAprovacao.WebApi.ResponseDtos
             //To-do: implementar o recebimento do nome da categoria atraves do id
             Category = document.CategoryId;
             Description = document.Description;
-            Status = Enum.GetName(document.Status);
+            Status = Enum.GetName(document.Status)!;
             CreatedAt = document.CreatedAt.ToString("F", CultureInfo.InvariantCulture);
-            StatusDeterminedAt = 
-                document.StatusDeterminedAt == DateTime.MinValue ? 
-                "N/A" : 
-                document.StatusDeterminedAt.ToString("F", CultureInfo.InvariantCulture);
+            StatusDeterminedAt = document.StatusDeterminedAt == null ? "N/A" : document.StatusDeterminedAt?.ToString("F", CultureInfo.InvariantCulture)!;
         }
 
 
