@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using MotorAprovacao.Data.EF;
+using MotorAprovacao.Data.Repositories;
+using MotorAprovacao.WebApi.Services;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace MotorAprovacao.WebApi
@@ -21,6 +23,10 @@ namespace MotorAprovacao.WebApi
 
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection")));
+
+            builder.Services.AddScoped<IRefundDocumentRepository, RefundDocumentRepository>();
+            builder.Services.AddScoped<IRefundDocumentService,  RefundDocumentService>();
+            builder.Services.AddScoped<IApprovalEngine,  ApprovalEngine>();
 
             var app = builder.Build();
 
