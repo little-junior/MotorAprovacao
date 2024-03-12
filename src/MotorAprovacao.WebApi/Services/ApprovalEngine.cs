@@ -31,15 +31,15 @@ namespace MotorAprovacao.WebApi.Services
                 minDisapprovalCategory = defaultCategoryRules.MinimumToDisapprove;
             }
 
-            decimal requestTotal = document.Total;
+            decimal refundTotal = document.Total;
 
-            if (requestTotal <= maxApprovalCategory)
+            if (refundTotal <= maxApprovalCategory)
             {
                 document.Approve();
                 return;
             }
 
-            if (requestTotal > minDisapprovalCategory)
+            if (refundTotal > minDisapprovalCategory)
             {
                 document.Disapprove();
                 return;
