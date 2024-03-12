@@ -13,6 +13,8 @@ namespace MotorAprovacao.WebApi.Services
             _context = context;
         }
 
+        const int OutrosCategoryId = 1;
+
         public async Task ProcessDocument(RefundDocument document)
         {
             decimal maxApprovalCategory, minDisapprovalCategory;
@@ -26,7 +28,7 @@ namespace MotorAprovacao.WebApi.Services
             }
             else
             {
-                var defaultCategoryRules = await _context.Rules.FirstOrDefaultAsync(rule => rule.CategoryId == 1);
+                var defaultCategoryRules = await _context.Rules.FirstOrDefaultAsync(rule => rule.CategoryId == OutrosCategoryId);
                 maxApprovalCategory = defaultCategoryRules.MaximumToApprove;
                 minDisapprovalCategory = defaultCategoryRules.MinimumToDisapprove;
             }
