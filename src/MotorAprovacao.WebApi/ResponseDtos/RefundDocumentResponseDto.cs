@@ -10,16 +10,16 @@ namespace MotorAprovacao.WebApi.ResponseDtos
         {
             Id = document.Id;
             //To-do: pegar culture do app.settings
-            Total = document.Total.ToString("C", CultureInfo.CreateSpecificCulture("pt-BR"));
+            Total = document.Total.ToString("C", CultureInfo.InvariantCulture);
             //To-do: implementar o recebimento do nome da categoria atraves do id
             Category = document.CategoryId;
             Description = document.Description;
             Status = Enum.GetName(document.Status);
-            CreatedAt = document.CreatedAt.ToString("F", CultureInfo.CreateSpecificCulture("pt-BR"));
+            CreatedAt = document.CreatedAt.ToString("F", CultureInfo.InvariantCulture);
             StatusDeterminedAt = 
                 document.StatusDeterminedAt == DateTime.MinValue ? 
                 "N/A" : 
-                document.StatusDeterminedAt.ToString("F", CultureInfo.CreateSpecificCulture("pt-BR"));
+                document.StatusDeterminedAt.ToString("F", CultureInfo.InvariantCulture);
         }
 
 

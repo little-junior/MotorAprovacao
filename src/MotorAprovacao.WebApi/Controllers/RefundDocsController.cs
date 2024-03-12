@@ -22,7 +22,7 @@ namespace MotorAprovacao.WebApi.Controllers
         [HttpGet()]
         public async Task<IActionResult> GetByStatus([FromQuery]int status)
         {
-            if (status != 0 || status != 1 || status != 2)
+            if (!Enum.IsDefined(typeof(Status), status))
             {
                 return NotFound();
             }
