@@ -2,9 +2,10 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-
+using Microsoft.OpenApi.Models;
 using MotorAprovacao.WebApi.AuthContextMock;
 using MotorAprovacao.WebApi.AuthServices;
+using System.Net;
 using System.Text;
 
 namespace MotorAprovacao.WebApi
@@ -20,7 +21,37 @@ namespace MotorAprovacao.WebApi
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+
+            //default Swagger configuration for JWT utilization
+            builder.Services.AddSwaggerGen(x =>
+            {
+                x.SwaggerDoc("v1", new OpenApiInfo { Title = "motorAprovação", Version = "v1" });
+
+                x.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Bearer JWT"
+                });
+
+                x.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] {}
+                    }
+                });
+            });
 
             //Injection suggestion required for partial delivery day 12 corrigir implementação dos using
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>().
