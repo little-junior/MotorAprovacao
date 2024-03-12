@@ -6,6 +6,7 @@ using MotorAprovacao.WebApi.AuthServices;
 using System.IdentityModel.Tokens.Jwt;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
+//using MotorAprovacao.Models
 
 namespace MotorAprovacao.WebApi.AuthController
 {
@@ -31,16 +32,16 @@ namespace MotorAprovacao.WebApi.AuthController
 
         [HttpPost]
         [Route("login")]
-        public async Task<IActionResult> Login ([FromBody]LoginDTO model)
+        public async Task<IActionResult> Login ([FromBody]LoginDTO loginDto)
         {
-            var user = await _userManager.FindByNameAsync(model.UserName!);
+            var user = await _userManager.FindByNameAsync(loginDto.UserName!);
 
-            if(user is not null && await _userManager.CheckPasswordAsync(user, model.Password))
+            if(user is not null && await _userManager.CheckPasswordAsync(user, loginDto.Password))
             {
                 var userRoles = await _userManager.GetRolesAsync(user);
                 var authClaims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Name, user.UserName!),
+                    new Claim(ClaimTypes.Name, user.UserName),
                     new Claim(ClaimTypes.Email, user.Email!),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                 };
@@ -73,10 +74,10 @@ namespace MotorAprovacao.WebApi.AuthController
         }
 
         [HttpPost]
-        [Route("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDTO register)
+        [Route("registerDto")]
+        public async Task<IActionResult> Register([FromBody] RegisterDTO registerDto)
         {
-            var userExists = await _userManager.FindByNameAsync(register.UserName);
+            var userExists = await _userManager.FindByNameAsync(registerDto.UserName);
 
             if (userExists != null)
             {
@@ -85,19 +86,66 @@ namespace MotorAprovacao.WebApi.AuthController
 
             ApplicationUser user = new()
             {
-                Email = register.Email,
+                Email = registerDto.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = register.UserName
+                UserName = registerDto.UserName
             };
             
 
-            var result = await _userManager.CreateAsync(user, register.Password);
+            var result = await _userManager.CreateAsync(user, registerDto.Password);
             if (!result.Succeeded)
             {
                 return BadRequest();
             }
 
             return Ok(result);
+        }
+
+        [HttpPost]
+        [Route("refresh")]
+        public async Task<IActionResult> RefreshToken(TokenDTO tokenDto)
+        {
+            if(tokenDto is null)
+            {
+                return BadRequest("Acesso inválido!");
+            }
+
+            string? acessToken = tokenDto.AcessToken ?? 
+               throw new ArgumentException(nameof(tokenDto));
+
+            string? refreshToken = tokenDto.RefreshToken ??
+                throw new ArgumentException(nameof(tokenDto));
+
+            var primary = _tokenService.GetPricipalFromExpiredToken(acessToken!, _configuration);
+
+            if(primary == null)
+            {
+                return BadRequest("Acesso inválido!");
+            }
+
+            string userName = primary.Identity.Name;
+            var user = await _userManager.FindByNameAsync(userName);
+
+            if (user == null || user.RefreshToken != refreshToken
+                             || user.RefreshTokenExpiryTime <= DateTime.Now)
+            {
+                return BadRequest("Acesso inválido!");
+            }
+
+            var newAccessToken = _tokenService.GenerateAccessToken(primary.Claims.ToList(), _configuration);
+
+            var newRefreshToken = _tokenService.GenerateRefreshToken();
+
+            user.RefreshToken = newAccessToken;
+
+            await _userManager.UpdateAsync(user);
+
+            return new ObjectResult(new
+            {
+                acessToken = new JwtSecurityTokenHandler().WriteToken(newAccessToken),
+                refreshToken = newRefreshToken,
+            });
+            
         }
     }
 }
