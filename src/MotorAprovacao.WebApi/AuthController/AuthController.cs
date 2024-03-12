@@ -74,6 +74,56 @@ namespace MotorAprovacao.WebApi.AuthController
         }
 
         [HttpPost]
+        [Route("createRole")]
+        public async Task<IActionResult> CreateRole(string roleNome)
+        {
+            var roleExist = await _roleManager.RoleExistsAsync(roleNome);
+            if (!roleExist)
+            {
+                var roleResult = await _roleManager.CreateAsync(new IdentityRole(roleNome));
+
+                if(roleResult.Succeeded)
+                {
+                    //to do é possivel registrar logger
+                    //to do ajustar retorno de status
+                    return Ok();
+                }
+                else
+                {
+                    //to do é possivel registrar logger
+                    //to do ajustar retorno de status
+                    return BadRequest();
+                }
+            }
+            return BadRequest("Função inexistente");
+        }
+
+        [HttpPost]
+        [Route("userRole")]
+        public async Task<IActionResult> AddUserToRole(string email, string roleName)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user != null)
+            {
+                var result = await _userManager.AddToRoleAsync(user, roleName);
+                if (result.Succeeded)
+                {
+                    //to do é possivel registrar logger
+                    //to do ajustar retorno de status
+                    return Ok();
+                }
+                else
+                {
+                    //to do é possivel registrar logger
+                    //to do ajustar retorno de status
+                    return BadRequest()
+                }
+            }
+            //to do ajustar retorno do erro
+            return BadRequest();
+        }
+
+        [HttpPost]
         [Route("registerDto")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO registerDto)
         {
