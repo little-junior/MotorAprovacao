@@ -40,7 +40,7 @@ public class AppDbContext : DbContext
             builder.Property(s => s.Status).IsRequired();
             builder.Property(s => s.Total).IsRequired().HasPrecision(5);
             builder.Property(s => s.CreatedAt).IsRequired().ValueGeneratedOnAdd();
-            builder.Property(s => s.StatusDeterminedAt).IsRequired().ValueGeneratedOnUpdate();
+            builder.Property(s => s.StatusDeterminedAt);
         });
 
         modelBuilder.Entity<Category>(builder =>
