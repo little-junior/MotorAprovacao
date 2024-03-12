@@ -21,6 +21,12 @@ public class AppDbContext : DbContext
     public DbSet<CategoryRules> Rules { get; set; }
     public DbSet<Category> Categories { get; set; }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseNpgsql(
+            "Host=localhost; Port=5432; Database=BancoTeste; Username=postgres; Password=post",
+            options => options.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName));
+    }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
