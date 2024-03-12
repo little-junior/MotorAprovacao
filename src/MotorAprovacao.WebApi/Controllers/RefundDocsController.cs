@@ -20,19 +20,20 @@ namespace MotorAprovacao.WebApi.Controllers
         }
 
         [HttpGet()]
-        public async Task<IActionResult> GetByStatus([FromQuery]int status)
+        public async Task<IActionResult> GetByStatus([FromQuery]Status status)
         {
             if (!Enum.IsDefined(typeof(Status), status))
             {
                 return NotFound();
             }
 
-            var documentsByStatus = await _service.GetDocumentsByStatus((Status)status);
+            var documentsByStatus = await _service.GetDocumentsByStatus(status);
 
             //To do: criar service para a criação de dto, tirando o acoplamento
+            //Talvez tirar isso daqui
             IEnumerable<RefundDocumentResponseDto> documentsResponseDtos = documentsByStatus
                 .Select(index => new RefundDocumentResponseDto(index))
-                .OrderByDescending(doc => doc.Total);
+                .OrderBy(doc => doc.Total);
 
             if (!documentsResponseDtos.Any()) 
             {
@@ -50,7 +51,7 @@ namespace MotorAprovacao.WebApi.Controllers
             var documentResponseDto = new RefundDocumentResponseDto(createdDocument);
 
             //To do: adicionar validação para returnar BadRequest em caso de entrada inválida
-            return Created($"api/refunddocs?status={createdDocument.Id}", documentResponseDto);
+            return Created($"api/refunddocs?status={createdDocument.Status}", documentResponseDto);
         }
 
         //To do: discutir sobre o método e a arquitetura da rota desses endpoints
