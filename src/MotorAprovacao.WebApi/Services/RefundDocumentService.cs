@@ -48,6 +48,13 @@ namespace MotorAprovacao.WebApi.Services
             await _repository.SaveChanges();
         }
 
+        public async Task<RefundDocument> GetDocumentById(Guid id)
+        {
+            var document = await _repository.GetById(id);
+
+            return document;
+        }
+
         public async Task<IEnumerable<RefundDocument>> GetDocumentsByStatus(Status status)
         {
             var documents = await _repository.GetByStatus(status);

@@ -6,6 +6,7 @@ namespace MotorAprovacao.WebApi.Services
 {
     public interface IRefundDocumentService
     {
+        Task<RefundDocument> GetDocumentById(Guid id);
         Task<IEnumerable<RefundDocument>> GetDocumentsByStatus(Status status);
         Task<RefundDocument> CreateDocument(RefundDocumentRequestDto documentDto);
         Task ApproveDocument(Guid id);
