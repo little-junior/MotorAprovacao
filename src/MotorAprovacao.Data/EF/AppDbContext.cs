@@ -50,9 +50,11 @@ public class AppDbContext : IdentityDbContext
             builder.Property(s => s.Name).HasMaxLength(MaxCharsByCategory);
             builder.HasData(new List<Category>()
             {
-            new Category(1, "Outros"),
-            new Category(2, "Alimentacao"),
-            new Category(3, "Transporte"),
+                new Category(1, "Outros"),
+                new Category(2, "Alimentacao"),
+                new Category(3, "Transporte"),
+                new Category(4, "Hospedagem"),
+                new Category(5, "Viagem"),
             });
         });
 
