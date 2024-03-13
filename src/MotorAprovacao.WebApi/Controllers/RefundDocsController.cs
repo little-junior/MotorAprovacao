@@ -48,7 +48,9 @@ namespace MotorAprovacao.WebApi.Controllers
         {
             var createdDocument = await _service.CreateDocument(documentDto);
 
-            var documentResponseDto = new RefundDocumentResponseDto(createdDocument);
+            var documentById = await _service.GetDocumentById(createdDocument.Id);
+
+            var documentResponseDto = new RefundDocumentResponseDto(documentById);
 
             //To do: adicionar validação para returnar BadRequest em caso de entrada inválida
             return Created($"api/refunddocs?status={createdDocument.Status}", documentResponseDto);

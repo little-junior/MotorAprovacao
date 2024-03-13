@@ -26,14 +26,18 @@ namespace MotorAprovacao.Data.Repositories
 
         public async Task<RefundDocument> GetById(Guid id)
         {
-            var document = await _context.RefundDocuments.SingleOrDefaultAsync(document => document.Id == id);
+            var joinQuery = _context.RefundDocuments.Include(x => x.Category);
+
+            var document = await joinQuery.SingleOrDefaultAsync(document => document.Id == id);
 
             return document;
         }
 
         public async Task<IEnumerable<RefundDocument>> GetByStatus(Status status)
         {
-            var documents = await _context.RefundDocuments.Where(document => document.Status == status).ToListAsync();
+            var joinQuery = _context.RefundDocuments.Include(x => x.Category);
+
+            var documents = await joinQuery.Where(document => document.Status == status).ToListAsync();
 
             return documents;
         }

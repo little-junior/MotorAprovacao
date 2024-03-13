@@ -11,8 +11,7 @@ namespace MotorAprovacao.WebApi.ResponseDtos
             Id = document.Id;
             //To-do: pegar culture do app.settings
             Total = document.Total.ToString("C", CultureInfo.InvariantCulture);
-            //To-do: implementar o recebimento do nome da categoria atraves do id
-            Category = document.CategoryId;
+            Category = document.Category.Name;
             Description = document.Description;
             Status = Enum.GetName(document.Status)!;
             CreatedAt = document.CreatedAt.ToString("F", CultureInfo.InvariantCulture);
@@ -22,7 +21,7 @@ namespace MotorAprovacao.WebApi.ResponseDtos
 
         public Guid Id { get; set; }
         public string Total { get; set; }
-        public int Category { get; set; }
+        public string Category { get; set; }
         public string Description { get; set; }
         public string Status { get; set; }
         public string CreatedAt { get; set; }
