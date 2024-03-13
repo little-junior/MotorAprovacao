@@ -39,8 +39,6 @@ namespace MotorAprovacao.WebApi.Controllers
 
             var documentsByStatus = await _service.GetDocumentsByStatus(status);
 
-            //To do: criar service para a criação de dto, tirando o acoplamento
-            //Talvez tirar isso daqui
             IEnumerable<RefundDocumentResponseDto> documentsResponseDtos = documentsByStatus
                 .Select(index => new RefundDocumentResponseDto(index))
                 .OrderBy(doc => doc.Total);
@@ -65,8 +63,6 @@ namespace MotorAprovacao.WebApi.Controllers
             //To do: adicionar validação para returnar BadRequest em caso de entrada inválida
             return Created($"api/refunddocs/{documentResponseDto.Id}", documentResponseDto);
         }
-
-        //To do: discutir sobre o método e a arquitetura da rota desses endpoints
 
         [HttpPatch("{id}/approve")]
         public async Task<IActionResult> PatchApprove([FromRoute] Guid id)
