@@ -37,6 +37,7 @@ namespace MotorAprovacao.WebApi
             builder.Services.AddScoped<IRefundDocumentService,  RefundDocumentService>();
             builder.Services.AddScoped<IApprovalEngine,  ApprovalEngine>();
             builder.Services.AddScoped<ICategoryRulesRepository, CategoryRulesRepository>();
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 
             //default Swagger configuration for JWT utilization
