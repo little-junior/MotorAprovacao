@@ -30,6 +30,17 @@ namespace MotorAprovacao.WebApi
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            //to do verificar a posição correta do cors
+            var AllowedOrigins = "_allowedOrigins";
+            builder.Services.AddCors(options =>
+                options.AddPolicy(name: AllowedOrigins,
+                policy =>
+                {
+                    policy.WithOrigins("https://www.me.com.br/").
+                                                AllowAnyMethod();                       
+                })
+            );
+
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection")));
 
@@ -125,8 +136,9 @@ namespace MotorAprovacao.WebApi
 
             //app.UseHttpsRedirection();
 
+            //to do verificar a posição correta, deve ficar antes de autorizacao
+            app.UseCors(AllowedOrigins);
             //app.UseAuthorization();
-
 
             app.MapControllers();
 
