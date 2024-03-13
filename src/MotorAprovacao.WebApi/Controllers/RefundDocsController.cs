@@ -40,8 +40,8 @@ namespace MotorAprovacao.WebApi.Controllers
             var documentsByStatus = await _service.GetDocumentsByStatus(status);
 
             IEnumerable<RefundDocumentResponseDto> documentsResponseDtos = documentsByStatus
-                .Select(index => new RefundDocumentResponseDto(index))
-                .OrderBy(doc => doc.Total);
+                .OrderBy(doc => doc.Total)
+                .Select(index => new RefundDocumentResponseDto(index));
 
             if (!documentsResponseDtos.Any()) 
             {
