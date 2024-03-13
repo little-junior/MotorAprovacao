@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using MotorAprovacao.Data.EF;
 using MotorAprovacao.Data.Repositories;
 using MotorAprovacao.Models.Entities;
+using MotorAprovacao.Models.Entities.TheryDataClasses;
 using MotorAprovacao.Models.Enums;
 using MotorAprovacao.WebApi.RequestDtos;
 using MotorAprovacao.WebApi.Services;
@@ -18,31 +19,46 @@ namespace MotorAprovacao.Tests
 {
     public class ApprovalEngineTests
     {
-        [Fact]
-        public async Task AprovarReembolso_ComRegraDeAprovação_AcimaDoLimiteDeValor_DeveAprovar()
+        private AppDbContext _context;
+        private ApprovalEngine _approvalEngineMock;
+        private RefundDocumentRepository _repoMock;
+        private RefundDocumentService _documentService;
+
+        /// <summary>
+        /// Função que coloca todas as instancias necessárias para a testagem do código
+        /// ajuda na diminuição do BoilePlate
+        /// </summary>
+        private void Setup()
+        {
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
+            _context = new AppDbContext(options);
+
+            _approvalEngineMock = new ApprovalEngine(_context);
+            _repoMock = new RefundDocumentRepository(_context);
+            _documentService = new RefundDocumentService(_approvalEngineMock, _repoMock);
+
+            TestDataSeeder.SeedData(_context);
+        }
+
+        [Theory]
+        [ClassData(typeof(RefundDocumentRequestDtoShouldAprove))]
+        public async Task AprovarReembolso_ComRegraDeAprovação_AcimaDoLimiteDeValor_DeveAprovar(decimal total, int categoryId, string description)
         {
             // Arrange
-            var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(databaseName: "BancoTeste")
-                .Options;
-            var context = new AppDbContext(options);
 
-
-            var approvalEngineMock = new ApprovalEngine(context);
-            var repoMock = new RefundDocumentRepository(context);
-
-            var documentService = new RefundDocumentService(approvalEngineMock, repoMock);
+            Setup();
             var request = new RefundDocumentRequestDto
             {
-                Total = 50m,
-                CategoryId = 1,
-                Description = "yay"
+                Total = total,
+                CategoryId = categoryId,
+                Description = description
             };
-            TestDataSeeder.SeedData(context);
 
             // Act
-            var document = await documentService.CreateDocument(request);
-            await approvalEngineMock.ProcessDocument(document);
+            var document = await _documentService.CreateDocument(request);
+            await _approvalEngineMock.ProcessDocument(document);
 
             // Assert
             document.Status.Should().Be(Status.Approved);
@@ -60,14 +76,24 @@ namespace MotorAprovacao.Tests
         }
 
 
-        [Fact]
-        public async Task RecusarReembolso_ComRegraDeRecusa_AcimaDoLimiteDeValor_DeveRecusar()
+        [Theory]
+        [ClassData(typeof(RefundDocumentRequestDtoShouldNotAprove))]
+        public async Task RecusarReembolso_ComRegraDeRecusa_AcimaDoLimiteDeValor_DeveRecusar(decimal total, int categoryId, string description)
         {
-            // Arrange
+            Setup();
+            var request = new RefundDocumentRequestDto
+            {
+                Total = total,
+                CategoryId = categoryId,
+                Description = description
+            };
 
             // Act
+            var document = await _documentService.CreateDocument(request);
+            await _approvalEngineMock.ProcessDocument(document);
 
             // Assert
+            document.Status.Should().Be(Status.Disapproved);
         }
 
 
