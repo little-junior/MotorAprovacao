@@ -10,9 +10,6 @@ public class AppDbContext : IdentityDbContext
 {
     const int MaxCharsByDocumentoDescription = 200;
     const int MaxCharsByCategory = 70;
-    const int MaxIntByAprovacao = 10000;
-    const int MinIntByReprovacao = 10000;
-
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
@@ -20,10 +17,8 @@ public class AppDbContext : IdentityDbContext
     }
 
     public DbSet<RefundDocument> RefundDocuments { get; set; }
-
     public DbSet<CategoryRules> Rules { get; set; }
     public DbSet<Category> Categories { get; set; }
-
     public DbSet<ApplicationUser> Users { get; set; }
 
 
@@ -43,10 +38,8 @@ public class AppDbContext : IdentityDbContext
         modelBuilder.Entity<IdentityUser>(builder =>
         {
             builder.HasKey(s => s.Id);
-
             builder.Property(s => s.UserName);
             builder.Property(s => s.Email);
-
         });
 
         modelBuilder.Entity<Category>(builder =>
@@ -70,8 +63,8 @@ public class AppDbContext : IdentityDbContext
                 .WithOne(r => r.CategoryRules)
                 .IsRequired()
                 .HasForeignKey<CategoryRules>(s => s.CategoryId);
-            builder.Property(s => s.MaximumToApprove).HasMaxLength(MaxIntByAprovacao);
-            builder.Property(s => s.MinimumToDisapprove).HasMaxLength(MinIntByReprovacao);
+            builder.Property(s => s.MaximumToApprove);
+            builder.Property(s => s.MinimumToDisapprove);
 
             builder.HasData(new List<CategoryRules>()
             {
@@ -79,9 +72,8 @@ public class AppDbContext : IdentityDbContext
                 new CategoryRules(2, 2, 500m, 1000m),
                 new CategoryRules(3, 3, 500m, 1000m),
             });
-
-            base.OnModelCreating(modelBuilder);
         });
 
+        base.OnModelCreating(modelBuilder);
     }
 }
