@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MotorAprovacao.Data.Repositories;
 using MotorAprovacao.Models.Enums;
 using MotorAprovacao.WebApi.ErrorHandlers;
 using MotorAprovacao.WebApi.RequestDtos;
@@ -13,10 +14,12 @@ namespace MotorAprovacao.WebApi.Controllers
     {
         //To do: adicionar validações, verificações e tratar exceções
         private readonly IRefundDocumentService _service;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public RefundDocsController(IRefundDocumentService service)
+        public RefundDocsController(IRefundDocumentService service, ICategoryRepository categoryRepository)
         {
             _service = service;
+            _categoryRepository = categoryRepository;
         }
 
         [HttpGet("{id}")]
@@ -57,6 +60,13 @@ namespace MotorAprovacao.WebApi.Controllers
             if (documentDto.Total <= 0)
             {
                 return BadRequest(new ErrorResponse("400 - Bad Request", $"The value {documentDto.Total} is invalid."));
+            }
+
+            var categoryExistence = await _categoryRepository.CheckExistenceById(documentDto.CategoryId);
+
+            if (!categoryExistence)
+            {
+                return BadRequest(new ErrorResponse("400 - Bad Request", $"The value {documentDto.CategoryId} is invalid."));
             }
 
             var createdDocument = await _service.CreateDocument(documentDto);
