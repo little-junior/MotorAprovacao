@@ -19,6 +19,16 @@ namespace MotorAprovacao.WebApi.Controllers
             _service = service;
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById([FromRoute] Guid id)
+        {
+            var document = await _service.GetDocumentById(id);
+
+            var documentResponseDto = new RefundDocumentResponseDto(document);
+
+            return Ok(documentResponseDto);
+        }
+
         [HttpGet()]
         public async Task<IActionResult> GetByStatus([FromQuery]Status status)
         {
