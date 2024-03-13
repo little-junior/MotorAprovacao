@@ -63,7 +63,7 @@ namespace MotorAprovacao.WebApi.Controllers
             var documentResponseDto = new RefundDocumentResponseDto(documentById);
 
             //To do: adicionar validação para returnar BadRequest em caso de entrada inválida
-            return Created($"api/refunddocs?status={createdDocument.Status}", documentResponseDto);
+            return Created($"api/refunddocs/{documentResponseDto.Id}", documentResponseDto);
         }
 
         //To do: discutir sobre o método e a arquitetura da rota desses endpoints
