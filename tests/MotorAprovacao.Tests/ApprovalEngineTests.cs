@@ -43,8 +43,20 @@ namespace MotorAprovacao.Tests
         }
 
         [Theory]
-        [ClassData(typeof(RefundDocumentRequestDtoShouldAprove))]
+        [ClassData(typeof(RefundDocumentRequestDtoShouldAproveBelow))]
         public async Task AprovarReembolso_ComRegraDeAprovação_AcimaDoLimiteDeValor_DeveAprovar(decimal total, int categoryId, string description)
+        {
+            // Arrange
+
+            // Act
+
+            // Assert
+        }
+
+
+        [Theory]
+        [ClassData(typeof(RefundDocumentRequestDtoShouldAproveBelow))]
+        public async Task AprovarReembolso_ComRegraDeAprovação_AbaixoDoLimiteDeValor_DeveAprovar(decimal total, int categoryId, string description)
         {
             // Arrange
 
@@ -62,17 +74,6 @@ namespace MotorAprovacao.Tests
 
             // Assert
             document.Status.Should().Be(Status.Approved);
-        }
-
-
-        [Fact]
-        public async Task AprovarReembolso_ComRegraDeAprovação_AbaixoDoLimiteDeValor_DeveAprovar()
-        {
-            // Arrange
-
-            // Act
-
-            // Assert
         }
 
 

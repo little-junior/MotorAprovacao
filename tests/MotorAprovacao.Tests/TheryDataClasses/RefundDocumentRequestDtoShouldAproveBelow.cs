@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace MotorAprovacao.Models.Entities.TheryDataClasses
 {
-    internal class RefundDocumentRequestDtoShouldAprove : TheoryData<decimal, int, string>
+    internal class RefundDocumentRequestDtoShouldAproveBelow : TheoryData<decimal, int, string>
     {
-        public RefundDocumentRequestDtoShouldAprove()
+        public RefundDocumentRequestDtoShouldAproveBelow()
         {
             // Contem somente aqueles que devem ser aprovados
             Add(50m, 1, "Deve ser aprovado");
