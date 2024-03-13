@@ -26,13 +26,6 @@ public class AppDbContext : IdentityDbContext
 
     public DbSet<ApplicationUser> Users { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseNpgsql(
-            "Host=localhost; Port=5432; Database=BancoTeste; Username=postgres; Password=post",
-            options => options.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName));
-    }
-
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
