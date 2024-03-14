@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="AuthContextMock\**" />
+    <EmbeddedResource Remove="AuthContextMock\**" />
+    <None Remove="AuthContextMock\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.2" />
@@ -19,10 +25,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MotorAprovacao.Models\MotorAprovacao.Models.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="AuthContextMock\" />
   </ItemGroup>
 
 </Project>
