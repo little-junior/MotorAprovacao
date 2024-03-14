@@ -14,6 +14,10 @@ using MotorAprovacao.Data.Repositories;
 using MotorAprovacao.WebApi.Services;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using MotorAprovacao.Models.Entities;
+using Serilog;
+using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace MotorAprovacao.WebApi
 {
@@ -23,6 +27,32 @@ namespace MotorAprovacao.WebApi
         {
             var builder = WebApplication.CreateBuilder(args);
 
+
+            //implementação logging com dB
+            var config = new ConfigurationBuilder().AddJsonFile("appsetting.json").Build();
+
+            Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(config).CreateLogger();
+
+            try
+            {
+                Log.Information("Sistema financeiro de reembolso incializando...");
+
+                CreateHostBuilder(args).Build().Run();
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "O sistema falhou ao iniciar.");
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
+        //to do verificar posicionamento 
+            public static IHostBuilder CreateHostBuilder(string[] args) =>
+                Host.CreateDefaultBuilder(args).UseSerilog().ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<IStartup>();
+                });
             // Add services to the container.
 
             builder.Services.AddControllers();
