@@ -117,11 +117,9 @@ namespace MotorAprovacao.WebApi
             });
             builder.Services.AddScoped<ITokenService, TokenService>();
             
-            builder.Services.AddExceptionHandler<CustomExceptionHandler>();
-            
             var app = builder.Build();
 
-            app.UseExceptionHandler("/");
+            app.UseMiddleware<CustomExceptionMiddleware>();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -133,7 +131,6 @@ namespace MotorAprovacao.WebApi
             //app.UseHttpsRedirection();
 
             //app.UseAuthorization();
-
 
             app.MapControllers();
 
