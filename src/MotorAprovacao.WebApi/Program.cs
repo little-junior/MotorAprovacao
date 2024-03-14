@@ -14,6 +14,7 @@ using MotorAprovacao.Data.Repositories;
 using MotorAprovacao.WebApi.Services;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using MotorAprovacao.Models.Entities;
+using MotorAprovacao.WebApi.ErrorHandlers;
 
 namespace MotorAprovacao.WebApi
 {
@@ -116,7 +117,11 @@ namespace MotorAprovacao.WebApi
             });
             builder.Services.AddScoped<ITokenService, TokenService>();
             
+            builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+            
             var app = builder.Build();
+
+            app.UseExceptionHandler("/");
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
