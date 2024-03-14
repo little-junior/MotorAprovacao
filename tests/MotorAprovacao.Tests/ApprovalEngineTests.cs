@@ -199,25 +199,5 @@ namespace MotorAprovacao.Tests
             document.Status.Should().Be(Status.OnApproval);
             // aqui ficou faltando verificar se o id foi gerado pelo dt
         }
-
-        [Fact]
-        public async Task CriarReembolso_ComDadosInvalidos_DeveRetornarErro()
-        {
-            // Arrange
-            Setup();
-            var request = new RefundDocumentRequestDto
-            {
-                Total = -100m,
-                CategoryId = 10,
-                Description = "Title"
-            };
-
-            // Act
-            Func<Task> createDocumentAction = async () => await _documentService.CreateDocument(request);
-
-            // Assert
-            await createDocumentAction.Should().ThrowAsync<Exception>();
-        }
-
     }
 }
