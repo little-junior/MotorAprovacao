@@ -43,22 +43,25 @@ namespace MotorAprovacao.Tests
             TestDataSeeder.SeedData(_context);
         }
 
-        [Fact]
-        public async Task AprovarReembolso_ComRegraDeAprovação_AcimaDoLimiteDeValor_DeveAprovar_Categoria2()
+
+        [Theory]
+        [ClassData(typeof(RefundDocumentRequestDtoShouldAproveAbove))]
+        public async Task AprovarReembolso_ComRegraDeAprovação_AcimaDoLimiteDeValor_DeveAprovar(decimal total, int categoryId, string description)
         {
             // Arrange
             Setup();
-
             var request = new RefundDocumentRequestDto
             {
-                Total = 1200m,
-                CategoryId = 2, // Usando CategoryId correto para a categoria 2
-                Description = "Title"
+                Total = total,
+                CategoryId = categoryId,
+                Description = description
             };
 
             // Act
             var document = await _documentService.CreateDocument(request);
             await _approvalEngineMock.ProcessDocument(document);
+            await _documentService.ApproveDocument(document.Id);
+
 
             // Assert
             document.Status.Should().Be(Status.Approved);
@@ -90,7 +93,7 @@ namespace MotorAprovacao.Tests
 
 
         [Theory]
-        [ClassData(typeof(RefundDocumentRequestDtoShouldNotAprove))]
+        [ClassData(typeof(RefundDocumentRequestDtoShouldNotAproveAbove))]
         public async Task RecusarReembolso_ComRegraDeRecusa_AcimaDoLimiteDeValor_DeveRecusar(decimal total, int categoryId, string description)
         {
             Setup();
@@ -147,6 +150,7 @@ namespace MotorAprovacao.Tests
             // Act
             var document = await _documentService.CreateDocument(request);
             await _approvalEngineMock.ProcessDocument(document);
+            await _documentService.ApproveDocument(document.Id);
 
             // Assert
             document.Status.Should().Be(Status.Approved);
