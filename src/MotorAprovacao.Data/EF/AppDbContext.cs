@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MotorAprovacao.Models.Entities;
 using System.Reflection.Emit;
+using Microsoft.AspNetCore.Identity;
 
 namespace MotorAprovacao.Data.EF;
 
@@ -20,6 +21,7 @@ public class AppDbContext : IdentityDbContext
     public DbSet<CategoryRules> Rules { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<ApplicationUser> Users { get; set; }
+
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
