@@ -18,6 +18,7 @@ using Serilog;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using MotorAprovacao.WebApi.Logging;
 
 namespace MotorAprovacao.WebApi
 {
@@ -31,6 +32,11 @@ namespace MotorAprovacao.WebApi
             //implementação logging com dB
             var config = new ConfigurationBuilder().AddJsonFile("appsetting.json").Build();
 
+            builder.Host.UseSerilog((context, configuration) => configuration.
+                                                                ReadFrom.
+                                                                Configuration(context.Configuration));
+
+            //permanece?
             Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(config).CreateLogger();
 
             try
@@ -48,10 +54,11 @@ namespace MotorAprovacao.WebApi
                 Log.CloseAndFlush();
             }
         //to do verificar posicionamento 
-            public static IHostBuilder CreateHostBuilder (string[] args) =>
+            /*public static IHostBuilder CreateHostBuilder (string[] args) =>
                 Host.CreateDefaultBuilder(args).UseSerilog().ConfigureWebHostDefaults(webBuilder =>
                 {
-                });
+                }); */
+
             // Add services to the container.
 
             builder.Services.AddControllers();
@@ -145,6 +152,9 @@ namespace MotorAprovacao.WebApi
             builder.Services.AddScoped<ITokenService, TokenService>();
             
             var app = builder.Build();
+
+            var loggerFactory = builder.Services?.BuildServiceProvider().GetRequiredService<ILoggerFactory>();
+            app.UseCustomLog(loggerFactory, builder.Configuration);
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
