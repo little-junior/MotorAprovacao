@@ -15,6 +15,7 @@ namespace MotorAprovacao.WebApi.Filters
         {
             if (!context.ModelState.IsValid)
             {
+                //To do: formatar como o resto das mensagens de erro
                 context.Result = new BadRequestObjectResult(context.ModelState);
             }
         }
