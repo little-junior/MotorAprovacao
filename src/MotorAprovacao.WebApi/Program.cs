@@ -18,6 +18,7 @@ using Serilog;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using MotorAprovacao.WebApi;
 using MotorAprovacao.WebApi.Logging;
 
 namespace MotorAprovacao.WebApi
@@ -28,7 +29,6 @@ namespace MotorAprovacao.WebApi
         {
             var builder = WebApplication.CreateBuilder(args);
 
-
             //implementação logging com dB
             var config = new ConfigurationBuilder().AddJsonFile("appsetting.json").Build();
 
@@ -36,28 +36,7 @@ namespace MotorAprovacao.WebApi
                                                                 ReadFrom.
                                                                 Configuration(context.Configuration));
 
-            //permanece?
-            Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(config).CreateLogger();
 
-            try
-            {
-                Log.Information("Sistema financeiro de reembolso incializando...");
-
-                var host = CreateHostBuilder(args).Build();
-            }
-            catch (Exception ex)
-            {
-                Log.Fatal(ex, "O sistema falhou ao iniciar.");
-            }
-            finally
-            {
-                Log.CloseAndFlush();
-            }
-        //to do verificar posicionamento 
-            /*public static IHostBuilder CreateHostBuilder (string[] args) =>
-                Host.CreateDefaultBuilder(args).UseSerilog().ConfigureWebHostDefaults(webBuilder =>
-                {
-                }); */
 
             // Add services to the container.
 
@@ -154,6 +133,7 @@ namespace MotorAprovacao.WebApi
             var app = builder.Build();
 
             var loggerFactory = builder.Services?.BuildServiceProvider().GetRequiredService<ILoggerFactory>();
+
             app.UseCustomLog(loggerFactory, builder.Configuration);
 
             // Configure the HTTP request pipeline.

@@ -1,6 +1,7 @@
 ﻿using Serilog.Events;
 using Serilog.Filters;
 using Serilog;
+using Serilog.Exceptions;
 
 namespace MotorAprovacao.WebApi.Logging
 {
@@ -19,6 +20,11 @@ namespace MotorAprovacao.WebApi.Logging
                 .Filter.ByExcluding(Matching.FromSource("Microsoft.AspNetCore.StaticFiles"))
                 .WriteTo.Console();
 
+            Log.Logger = loggerConfiguration.CreateLogger();
+
+            loggerFactory.AddSerilog(Log.Logger);
         }
     }
 }
+
+
