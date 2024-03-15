@@ -71,8 +71,7 @@ namespace MotorAprovacao.WebApi
                 });
             });
 
-            //Injection suggestion required for partial delivery day 12 corrigir implementação dos using
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>().
+            builder.Services.AddIdentity<IdentityUser, IdentityRole>().
                             AddEntityFrameworkStores<AppDbContext>
                             ().AddDefaultTokenProviders();
 
