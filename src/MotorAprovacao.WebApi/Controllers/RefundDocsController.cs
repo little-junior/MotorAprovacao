@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using MotorAprovacao.Data.Repositories;
 using MotorAprovacao.Models.Enums;
 using MotorAprovacao.WebApi.ErrorHandlers;
+using MotorAprovacao.WebApi.Filters;
 using MotorAprovacao.WebApi.RequestDtos;
 using MotorAprovacao.WebApi.ResponseDtos;
 using MotorAprovacao.WebApi.Services;
@@ -15,7 +17,6 @@ namespace MotorAprovacao.WebApi.Controllers
         //To do: adicionar validações, verificações e tratar exceções
         private readonly IRefundDocumentService _service;
         private readonly ICategoryRepository _categoryRepository;
-
         public RefundDocsController(IRefundDocumentService service, ICategoryRepository categoryRepository)
         {
             _service = service;
@@ -37,7 +38,7 @@ namespace MotorAprovacao.WebApi.Controllers
             return Ok(documentResponseDto);
         }
 
-        [HttpGet()]
+        [HttpGet]
         public async Task<IActionResult> GetByStatus([FromQuery]int status)
         {
             if (!Enum.IsDefined(typeof(Status), status))
@@ -54,7 +55,8 @@ namespace MotorAprovacao.WebApi.Controllers
             return Ok(documentsResponseDtos);
         }
 
-        [HttpPost()]
+        [HttpPost]
+        [TypeFilter(typeof(ValidationActionFilter))]
         public async Task<IActionResult> PostRequestDoc([FromBody] RefundDocumentRequestDto documentDto)
         {
             if (documentDto.Total <= 0)
