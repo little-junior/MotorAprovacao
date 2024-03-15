@@ -37,7 +37,7 @@ namespace MotorAprovacao.WebApi
             {
                 Log.Information("Sistema financeiro de reembolso incializando...");
 
-                CreateHostBuilder(args).Build().Run();
+                var host = CreateHostBuilder(args).Build();
             }
             catch (Exception ex)
             {
@@ -48,10 +48,9 @@ namespace MotorAprovacao.WebApi
                 Log.CloseAndFlush();
             }
         //to do verificar posicionamento 
-            public static IHostBuilder CreateHostBuilder(string[] args) =>
+            public static IHostBuilder CreateHostBuilder (string[] args) =>
                 Host.CreateDefaultBuilder(args).UseSerilog().ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<IStartup>();
                 });
             // Add services to the container.
 
