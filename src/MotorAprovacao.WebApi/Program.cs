@@ -3,18 +3,18 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MotorAprovacao.WebApi.AuthServices;
-using System.Net;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using MotorAprovacao.Data.EF;
 using MotorAprovacao.Data.Repositories;
 using MotorAprovacao.WebApi.Services;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using MotorAprovacao.Models.Entities;
 using MotorAprovacao.WebApi.ErrorHandlers;
 using MotorAprovacao.WebApi.Filters;
 using Microsoft.AspNetCore.Mvc;
+using FluentValidation.AspNetCore;
+using MotorAprovacao.WebApi.RequestDtos;
+using FluentValidation;
 
 namespace MotorAprovacao.WebApi
 {
@@ -30,6 +30,9 @@ namespace MotorAprovacao.WebApi
             {
                 options.Filters.Add<ValidationActionFilter>();
             });
+
+            builder.Services.AddScoped<IValidator<RefundDocumentRequestDto>, RefundDocumentValidator>();
+            builder.Services.AddFluentValidationAutoValidation();
 
             builder.Services.Configure<ApiBehaviorOptions>(options =>
             {
