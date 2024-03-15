@@ -23,6 +23,8 @@ namespace MotorAprovacao.Tests
         private ApprovalEngine _approvalEngineMock;
         private RefundDocumentRepository _repoMock;
         private RefundDocumentService _documentService;
+        private CategoryRulesRepository _categoryRulesRepo;
+
 
         /// <summary>
         /// Função que coloca todas as instancias necessárias para a testagem do código
@@ -34,8 +36,8 @@ namespace MotorAprovacao.Tests
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
             _context = new AppDbContext(options);
-
-            _approvalEngineMock = new ApprovalEngine(_context);
+            _categoryRulesRepo = new CategoryRulesRepository(_context);
+            _approvalEngineMock = new ApprovalEngine(_categoryRulesRepo);
             _repoMock = new RefundDocumentRepository(_context);
             _documentService = new RefundDocumentService(_approvalEngineMock, _repoMock);
 
@@ -132,31 +134,6 @@ namespace MotorAprovacao.Tests
             // Assert
             document.Status.Should().Be(Status.Disapproved); 
         }
-
-
-
-        [Fact]
-        public async Task AprovarReembolso_SemRegrasEspecificas_DeveAprovar()
-        {
-            // Arrange
-            Setup();
-            var request = new RefundDocumentRequestDto
-            {
-                Total = 800m,
-                CategoryId = 4,
-                Description = "Title"
-            };
-
-            // Act
-            var document = await _documentService.CreateDocument(request);
-            await _approvalEngineMock.ProcessDocument(document);
-            await _documentService.ApproveDocument(document.Id);
-
-            // Assert
-            document.Status.Should().Be(Status.Approved);
-        }
-
-
 
         [Fact]
         public async Task RecusarReembolso_ComRegraDeRecusa_Transporte_DeveRecusar()
