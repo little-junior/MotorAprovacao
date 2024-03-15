@@ -1,19 +1,20 @@
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MotorAprovacao.WebApi.AuthServices;
-using System.Net;
 using System.Text;
-
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using MotorAprovacao.Data.EF;
 using MotorAprovacao.Data.Repositories;
 using MotorAprovacao.WebApi.Services;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using MotorAprovacao.Models.Entities;
+using MotorAprovacao.WebApi.ErrorHandlers;
+using MotorAprovacao.WebApi.Filters;
+using Microsoft.AspNetCore.Mvc;
+using FluentValidation.AspNetCore;
+using MotorAprovacao.WebApi.RequestDtos;
+using FluentValidation;
 
 namespace MotorAprovacao.WebApi
 {
@@ -25,7 +26,19 @@ namespace MotorAprovacao.WebApi
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers(options =>
+            {
+                options.Filters.Add<ValidationActionFilter>();
+            });
+
+            builder.Services.AddScoped<IValidator<RefundDocumentRequestDto>, RefundDocumentValidator>();
+            builder.Services.AddFluentValidationAutoValidation();
+
+            builder.Services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -38,7 +51,6 @@ namespace MotorAprovacao.WebApi
             builder.Services.AddScoped<IApprovalEngine,  ApprovalEngine>();
             builder.Services.AddScoped<ICategoryRulesRepository, CategoryRulesRepository>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-
 
             //default Swagger configuration for JWT utilization
             builder.Services.AddSwaggerGen(x =>
@@ -118,6 +130,8 @@ namespace MotorAprovacao.WebApi
             
             var app = builder.Build();
 
+            app.UseMiddleware<CustomExceptionMiddleware>();
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -128,7 +142,6 @@ namespace MotorAprovacao.WebApi
             //app.UseHttpsRedirection();
 
             //app.UseAuthorization();
-
 
             app.MapControllers();
 

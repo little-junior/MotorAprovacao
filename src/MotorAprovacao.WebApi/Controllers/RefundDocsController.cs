@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using MotorAprovacao.Data.Repositories;
 using MotorAprovacao.Models.Enums;
 using MotorAprovacao.WebApi.ErrorHandlers;
+using MotorAprovacao.WebApi.Filters;
 using MotorAprovacao.WebApi.RequestDtos;
 using MotorAprovacao.WebApi.ResponseDtos;
 using MotorAprovacao.WebApi.Services;
@@ -12,10 +14,8 @@ namespace MotorAprovacao.WebApi.Controllers
     [Route("api/[controller]")]
     public class RefundDocsController : ControllerBase
     {
-        //To do: adicionar validações, verificações e tratar exceções
         private readonly IRefundDocumentService _service;
         private readonly ICategoryRepository _categoryRepository;
-
         public RefundDocsController(IRefundDocumentService service, ICategoryRepository categoryRepository)
         {
             _service = service;
@@ -37,16 +37,17 @@ namespace MotorAprovacao.WebApi.Controllers
             return Ok(documentResponseDto);
         }
 
-        [HttpGet()]
+        [HttpGet]
         public async Task<IActionResult> GetByStatus([FromQuery]int status)
         {
             if (!Enum.IsDefined(typeof(Status), status))
             {
-                return BadRequest(new ErrorResponse("400 - Bad Request", $"The value '{status}' is invalid"));
+                return BadRequest(new ErrorResponse("400 - Bad Request", $"The value '{status}' of parameter 'status' is invalid"));
             }
 
             var documentsByStatus = await _service.GetDocumentsByStatus((Status)status);
 
+            //To do: implementar escolha de ordenação entre total ou ordem de criação
             IEnumerable<RefundDocumentResponseDto> documentsResponseDtos = documentsByStatus
                 .OrderBy(doc => doc.Total)
                 .Select(index => new RefundDocumentResponseDto(index));
@@ -54,19 +55,15 @@ namespace MotorAprovacao.WebApi.Controllers
             return Ok(documentsResponseDtos);
         }
 
-        [HttpPost()]
+        [HttpPost]
+        [TypeFilter(typeof(ValidationActionFilter))]
         public async Task<IActionResult> PostRequestDoc([FromBody] RefundDocumentRequestDto documentDto)
         {
-            if (documentDto.Total <= 0)
-            {
-                return BadRequest(new ErrorResponse("400 - Bad Request", $"The value {documentDto.Total} is invalid."));
-            }
-
             var categoryExistence = await _categoryRepository.CheckExistenceById(documentDto.CategoryId);
 
             if (!categoryExistence)
             {
-                return BadRequest(new ErrorResponse("400 - Bad Request", $"The value {documentDto.CategoryId} is invalid."));
+                return BadRequest(new ErrorResponse("400 - Bad Request", $"The value {documentDto.CategoryId} of field 'categoryId' is invalid."));
             }
 
             var createdDocument = await _service.CreateDocument(documentDto);
