@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Mvc;
 using FluentValidation.AspNetCore;
 using MotorAprovacao.WebApi.RequestDtos;
 using FluentValidation;
+using Microsoft.Extensions.Options;
+using System.Reflection;
 
 namespace MotorAprovacao.WebApi
 {
@@ -37,6 +39,7 @@ namespace MotorAprovacao.WebApi
             builder.Services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;
+                options.SuppressMapClientErrors = true;
             });
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -55,7 +58,23 @@ namespace MotorAprovacao.WebApi
             //default Swagger configuration for JWT utilization
             builder.Services.AddSwaggerGen(x =>
             {
-                x.SwaggerDoc("v1", new OpenApiInfo { Title = "motorAprovação", Version = "v1" });
+                x.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "MotorAprovacao API",
+                    Description = "API para o Desafio \"Motor de Aprovação - DiverseDev\"",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Repository",
+                        Url = new Uri("https://github.com/little-junior/MotorAprovacao")
+                    },
+                    License = new OpenApiLicense
+                    {
+                        Name = "Licence",
+                        //Adicionar link da licença no repositorio
+                        //Url = new Uri("https://github.com/little-junior/MotorAprovacao")
+                    }
+                });
 
                 x.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
                 {
@@ -81,6 +100,9 @@ namespace MotorAprovacao.WebApi
                         new string[] {}
                     }
                 });
+
+                var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                x.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
             });
 
             //Injection suggestion required for partial delivery day 12 corrigir implementação dos using
