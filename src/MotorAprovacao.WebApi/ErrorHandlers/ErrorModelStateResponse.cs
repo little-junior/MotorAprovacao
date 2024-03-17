@@ -4,9 +4,10 @@ namespace MotorAprovacao.WebApi.ErrorHandlers
 {
     public class ErrorModelStateResponse
     {
-        public ErrorModelStateResponse(string statusCode, ModelStateDictionary modelState) 
+        public ErrorModelStateResponse(int statusCode, string type, ModelStateDictionary modelState) 
         {
             StatusCode = statusCode;
+            Type = type;
             Messages = modelState
             .Where(entry => entry.Value.Errors.Any())
             .ToDictionary(
@@ -14,7 +15,8 @@ namespace MotorAprovacao.WebApi.ErrorHandlers
                 kvp => kvp.Value.Errors.Select(error => error.ErrorMessage).ToArray()
             );
         }
-        public string StatusCode { get; set; }
+        public int StatusCode { get; set; }
+        public string Type { get; set; }
         public IDictionary<string, string[]> Messages { get; set; }
     }
 }
