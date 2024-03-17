@@ -6,6 +6,11 @@ namespace MotorAprovacao.WebApi.Filters
 {
     public class ValidationActionFilter : IActionFilter
     {
+        private readonly ILogger<ValidationActionFilter> _logger;
+        public ValidationActionFilter(ILogger<ValidationActionFilter> logger)
+        {
+            _logger = logger;
+        }
         public void OnActionExecuted(ActionExecutedContext context)
         {
             
@@ -15,7 +20,9 @@ namespace MotorAprovacao.WebApi.Filters
         {
             if (!context.ModelState.IsValid)
             {
-                var errorResponse = new ErrorModelStateResponse(400, "Bad Request", context.ModelState);
+                _logger.LogWarning("Request ended because the model state is invalid");
+
+                var errorResponse = new ErrorResponse(400, "Bad Request", context.ModelState);
 
                 context.Result = new BadRequestObjectResult(errorResponse);
             }
