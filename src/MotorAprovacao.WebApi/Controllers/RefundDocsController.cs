@@ -41,12 +41,12 @@ namespace MotorAprovacao.WebApi.Controllers
         {
             _logger.LogInformation($"{nameof(GetById)} requested with 'id' = {id}");
 
-            var document = await _service.GetDocumentById(id);
+            var documentResult = await _service.GetDocumentById(id);
 
-            if (!document.Success)
-                return document.ErrorActionResult!;
+            if (!documentResult.Success)
+                return documentResult.ErrorActionResult!;
 
-            var documentResponseDto = new RefundDocumentResponseDto(document.Value!);
+            var documentResponseDto = new RefundDocumentResponseDto(documentResult.Value!);
 
             _logger.LogInformation($"{nameof(GetById)} responded with body {documentResponseDto}");
 
@@ -68,10 +68,10 @@ namespace MotorAprovacao.WebApi.Controllers
         {
             _logger.LogInformation($"{nameof(GetByStatus)} requested with 'status' = {status}");
 
-            var documentsByStatus = await _service.GetDocumentsByStatus(status);
+            var documentsByStatusResult = await _service.GetDocumentsByStatus(status);
 
             //To do: implementar escolha de ordenação entre total ou ordem de criação
-            IEnumerable<RefundDocumentResponseDto> documentsResponseDtos = documentsByStatus
+            IEnumerable<RefundDocumentResponseDto> documentsResponseDtos = documentsByStatusResult
                 .OrderBy(doc => doc.Total)
                 .Select(index => new RefundDocumentResponseDto(index));
 
@@ -106,12 +106,12 @@ namespace MotorAprovacao.WebApi.Controllers
         {
             _logger.LogInformation($"{nameof(PostRequestDoc)} requested with body\n{documentDto}");
 
-            var createdDocument = await _service.CreateDocument(documentDto);
+            var createdDocumentResult = await _service.CreateDocument(documentDto);
 
-            if (!createdDocument.Success)
-                return createdDocument.ErrorActionResult!;
+            if (!createdDocumentResult.Success)
+                return createdDocumentResult.ErrorActionResult!;
 
-            var documentById = await _service.GetDocumentById(createdDocument.Value!.Id);
+            var documentById = await _service.GetDocumentById(createdDocumentResult.Value!.Id);
 
             if (!documentById.Success)
                 return documentById.ErrorActionResult!;
@@ -141,10 +141,10 @@ namespace MotorAprovacao.WebApi.Controllers
         {
             _logger.LogInformation($"{nameof(PatchApprove)} requested with\n'id'={id}");
 
-            var approvedDocument = await _service.ApproveDocument(id);
+            var approvedDocumentResult = await _service.ApproveDocument(id);
 
-            if (!approvedDocument.Success)
-                return approvedDocument.ErrorActionResult!;
+            if (!approvedDocumentResult.Success)
+                return approvedDocumentResult.ErrorActionResult!;
 
             _logger.LogInformation($"{nameof(PatchApprove)} responded");
 
@@ -168,10 +168,10 @@ namespace MotorAprovacao.WebApi.Controllers
         {
             _logger.LogInformation($"{nameof(PatchDisapprove)} requested with\n'id'={id}");
 
-            var disapprovedDocument = await _service.DisapproveDocument(id);
+            var disapprovedDocumentResult = await _service.DisapproveDocument(id);
 
-            if (!disapprovedDocument.Success)
-                return disapprovedDocument.ErrorActionResult!;
+            if (!disapprovedDocumentResult.Success)
+                return disapprovedDocumentResult.ErrorActionResult!;
 
             _logger.LogInformation($"{nameof(PatchDisapprove)} responded");
 
