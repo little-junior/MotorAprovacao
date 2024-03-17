@@ -17,12 +17,12 @@ namespace MotorAprovacao.WebApi.Controllers
     public class RefundDocsController : ControllerBase
     {
         private readonly IRefundDocumentService _service;
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly ILogger<RefundDocsController> _logger;
 
-        public RefundDocsController(IRefundDocumentService service, ICategoryRepository categoryRepository)
+        public RefundDocsController(IRefundDocumentService service, ILogger<RefundDocsController> logger)
         {
             _service = service;
-            _categoryRepository = categoryRepository;
+            _logger = logger;
         }
 
         /// <summary>
@@ -36,17 +36,19 @@ namespace MotorAprovacao.WebApi.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(RefundDocumentResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ErrorModelStateResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            var document = await _service.GetDocumentById(id);
+            _logger.LogInformation($"{nameof(GetById)} requested with 'id' = {id}");
 
-            if (document == null)
-            {
-                return NotFound(new ErrorResponse("404 - Not Found", "Document not found."));
-            }
+            var documentResult = await _service.GetDocumentById(id);
 
-            var documentResponseDto = new RefundDocumentResponseDto(document);
+            if (!documentResult.Success)
+                return documentResult.ErrorActionResult!;
+
+            var documentResponseDto = new RefundDocumentResponseDto(documentResult.Value!);
+
+            _logger.LogInformation($"{nameof(GetById)} responded with body {documentResponseDto}");
 
             return Ok(documentResponseDto);
         }
@@ -62,19 +64,18 @@ namespace MotorAprovacao.WebApi.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(List<RefundDocumentResponseDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetByStatus([FromQuery]int status)
+        public async Task<IActionResult> GetByStatus([FromQuery] Status status)
         {
-            if (!Enum.IsDefined(typeof(Status), status))
-            {
-                return BadRequest(new ErrorResponse("400 - Bad Request", $"The value '{status}' of parameter 'status' is invalid"));
-            }
+            _logger.LogInformation($"{nameof(GetByStatus)} requested with 'status' = {status}");
 
-            var documentsByStatus = await _service.GetDocumentsByStatus((Status)status);
+            var documentsByStatusResult = await _service.GetDocumentsByStatus(status);
 
             //To do: implementar escolha de ordenação entre total ou ordem de criação
-            IEnumerable<RefundDocumentResponseDto> documentsResponseDtos = documentsByStatus
+            IEnumerable<RefundDocumentResponseDto> documentsResponseDtos = documentsByStatusResult
                 .OrderBy(doc => doc.Total)
                 .Select(index => new RefundDocumentResponseDto(index));
+
+            _logger.LogInformation($"{nameof(GetByStatus)} responded with body");
 
             return Ok(documentsResponseDtos);
         }
@@ -99,22 +100,25 @@ namespace MotorAprovacao.WebApi.Controllers
         /// <response code="400">At least one field in the Refund Document Request Body is invalid</response>
         [HttpPost]
         [ProducesResponseType(typeof(RefundDocumentResponseDto), StatusCodes.Status201Created)]
-        [ProducesResponseType(typeof(ErrorModelStateResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         [TypeFilter(typeof(ValidationActionFilter))]
         public async Task<IActionResult> PostRequestDoc([FromBody] RefundDocumentRequestDto documentDto)
         {
-            var categoryExistence = await _categoryRepository.CheckExistenceById(documentDto.CategoryId);
+            _logger.LogInformation($"{nameof(PostRequestDoc)} requested with body\n{documentDto}");
 
-            if (!categoryExistence)
-            {
-                return BadRequest(new ErrorResponse("400 - Bad Request", $"The value {documentDto.CategoryId} of field 'categoryId' is invalid."));
-            }
+            var createdDocumentResult = await _service.CreateDocument(documentDto);
 
-            var createdDocument = await _service.CreateDocument(documentDto);
+            if (!createdDocumentResult.Success)
+                return createdDocumentResult.ErrorActionResult!;
 
-            var documentById = await _service.GetDocumentById(createdDocument.Id);
+            var documentById = await _service.GetDocumentById(createdDocumentResult.Value!.Id);
 
-            var documentResponseDto = new RefundDocumentResponseDto(documentById);
+            if (!documentById.Success)
+                return documentById.ErrorActionResult!;
+
+            var documentResponseDto = new RefundDocumentResponseDto(documentById.Value!);
+
+            _logger.LogInformation($"{nameof(PostRequestDoc)} responded with body");
 
             return Created($"api/refunddocs/{documentResponseDto.Id}", documentResponseDto);
         }
@@ -130,25 +134,19 @@ namespace MotorAprovacao.WebApi.Controllers
         /// <response code="409">Refund Document could not be updated</response>
         [HttpPatch("{id}/approve")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(typeof(ErrorModelStateResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
-        [ProducesDefaultResponseType(typeof(ErrorResponse))]
         public async Task<IActionResult> PatchApprove([FromRoute] Guid id)
         {
-            var document = await _service.GetDocumentById(id);
+            _logger.LogInformation($"{nameof(PatchApprove)} requested with\n'id'={id}");
 
-            if (document == null)
-            {
-                return NotFound(new ErrorResponse("404 - Not Found", "Document not found."));
-            }
+            var approvedDocumentResult = await _service.ApproveDocument(id);
 
-            if (document.Status != Status.OnApproval)
-            {
-                return Conflict(new ErrorResponse("409 - Conflict", "Document can only be approved while in the 'OnApproval' state."));
-            }
+            if (!approvedDocumentResult.Success)
+                return approvedDocumentResult.ErrorActionResult!;
 
-            await _service.ApproveDocument(id);
+            _logger.LogInformation($"{nameof(PatchApprove)} responded");
 
             return NoContent();
         }
@@ -163,24 +161,19 @@ namespace MotorAprovacao.WebApi.Controllers
         /// <response code="409">Refund Document could not be updated</response>
         [HttpPatch("{id}/disapprove")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(typeof(ErrorModelStateResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
         public async Task<IActionResult> PatchDisapprove([FromRoute] Guid id)
         {
-            var document = await _service.GetDocumentById(id);
+            _logger.LogInformation($"{nameof(PatchDisapprove)} requested with\n'id'={id}");
 
-            if (document == null)
-            {
-                return NotFound(new ErrorResponse("404 - Not Found", "Document not found."));
-            }
+            var disapprovedDocumentResult = await _service.DisapproveDocument(id);
 
-            if (document.Status != Status.OnApproval)
-            {
-                return Conflict(new ErrorResponse("409 - Conflict", "Document can only be disapproved while in the 'OnApproval' state."));
-            }
+            if (!disapprovedDocumentResult.Success)
+                return disapprovedDocumentResult.ErrorActionResult!;
 
-            await _service.DisapproveDocument(id);
+            _logger.LogInformation($"{nameof(PatchDisapprove)} responded");
 
             return NoContent();
         }

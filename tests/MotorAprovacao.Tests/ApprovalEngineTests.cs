@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using MotorAprovacao.Data.EF;
 using MotorAprovacao.Data.Repositories;
 using MotorAprovacao.Models.Entities;
@@ -24,8 +25,8 @@ namespace MotorAprovacao.Tests
         private RefundDocumentRepository _repoMock;
         private RefundDocumentService _documentService;
         private CategoryRulesRepository _categoryRulesRepo;
-
-
+        private CategoryRepository _categoryRepo;
+        private ILogger<RefundDocumentService> _logger;
         /// <summary>
         /// Função que coloca todas as instancias necessárias para a testagem do código
         /// ajuda na diminuição do BoilePlate
@@ -37,9 +38,11 @@ namespace MotorAprovacao.Tests
                 .Options;
             _context = new AppDbContext(options);
             _categoryRulesRepo = new CategoryRulesRepository(_context);
+            _categoryRepo = new CategoryRepository(_context);
             _approvalEngineMock = new ApprovalEngine(_categoryRulesRepo);
             _repoMock = new RefundDocumentRepository(_context);
-            _documentService = new RefundDocumentService(_approvalEngineMock, _repoMock);
+            _logger = Substitute.For<ILogger<RefundDocumentService>>();
+            _documentService = new RefundDocumentService(_approvalEngineMock, _repoMock, _categoryRepo, _logger);
 
 
             TestDataSeeder.SeedData(_context);
@@ -61,12 +64,12 @@ namespace MotorAprovacao.Tests
 
             // Act
             var document = await _documentService.CreateDocument(request);
-            await _approvalEngineMock.ProcessDocument(document);
-            await _documentService.ApproveDocument(document.Id);
+            await _approvalEngineMock.ProcessDocument(document.Value!);
+            await _documentService.ApproveDocument(document.Value!.Id);
 
 
             // Assert
-            document.Status.Should().Be(Status.Approved);
+            document.Value.Status.Should().Be(Status.Approved);
         }
 
 
@@ -87,10 +90,10 @@ namespace MotorAprovacao.Tests
 
             // Act
             var document = await _documentService.CreateDocument(request);
-            await _approvalEngineMock.ProcessDocument(document);
+            await _approvalEngineMock.ProcessDocument(document.Value!);
 
             // Assert
-            document.Status.Should().Be(Status.Approved);
+            document.Value!.Status.Should().Be(Status.Approved);
         }
 
 
@@ -108,10 +111,10 @@ namespace MotorAprovacao.Tests
 
             // Act
             var document = await _documentService.CreateDocument(request);
-            await _approvalEngineMock.ProcessDocument(document);
+            await _approvalEngineMock.ProcessDocument(document.Value!);
 
             // Assert
-            document.Status.Should().Be(Status.Disapproved);
+            document.Value!.Status.Should().Be(Status.Disapproved);
         }
 
 
@@ -132,7 +135,7 @@ namespace MotorAprovacao.Tests
             var document = await _documentService.CreateDocument(request);
 
             // Assert
-            document.Status.Should().Be(Status.Disapproved); 
+            document.Value!.Status.Should().Be(Status.Disapproved); 
         }
 
         [Fact]
@@ -149,10 +152,10 @@ namespace MotorAprovacao.Tests
 
             // Act
             var document = await _documentService.CreateDocument(request);
-            await _approvalEngineMock.ProcessDocument(document);
+            await _approvalEngineMock.ProcessDocument(document.Value!);
 
             // Assert
-            document.Status.Should().Be(Status.Disapproved);
+            document.Value!.Status.Should().Be(Status.Disapproved);
         }
 
 
@@ -173,7 +176,7 @@ namespace MotorAprovacao.Tests
 
             // Assert
             document.Should().NotBeNull();
-            document.Status.Should().Be(Status.OnApproval);
+            document.Value!.Status.Should().Be(Status.OnApproval);
             // aqui ficou faltando verificar se o id foi gerado pelo dt
         }
     }

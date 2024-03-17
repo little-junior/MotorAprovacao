@@ -23,10 +23,12 @@
 
         private async Task HandleExceptionAsync(HttpContext context, Exception ex)
         {
+            _logger.LogError(ex.ToString());
+
             context.Response.StatusCode = 500;
             context.Response.ContentType = "application/json";
 
-            var responseObject = new ErrorResponse("500 - Internal System Error", "An internal error occurred.");
+            var responseObject = new ErrorResponse(500 , "Internal Server Error", "server", "An internal error occurred.");
 
             await context.Response.WriteAsJsonAsync(responseObject);
         }

@@ -17,6 +17,7 @@ using MotorAprovacao.WebApi.RequestDtos;
 using FluentValidation;
 using Microsoft.Extensions.Options;
 using System.Reflection;
+using Microsoft.AspNetCore.HttpLogging;
 
 namespace MotorAprovacao.WebApi
 {
@@ -40,6 +41,11 @@ namespace MotorAprovacao.WebApi
             {
                 options.SuppressModelStateInvalidFilter = true;
                 options.SuppressMapClientErrors = true;
+            });
+
+            builder.Services.AddHttpLogging(options =>
+            {
+                options.LoggingFields = HttpLoggingFields.All;
             });
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -67,12 +73,6 @@ namespace MotorAprovacao.WebApi
                     {
                         Name = "Repository",
                         Url = new Uri("https://github.com/little-junior/MotorAprovacao")
-                    },
-                    License = new OpenApiLicense
-                    {
-                        Name = "Licence",
-                        //Adicionar link da licença no repositorio
-                        //Url = new Uri("https://github.com/little-junior/MotorAprovacao")
                     }
                 });
 
@@ -153,6 +153,7 @@ namespace MotorAprovacao.WebApi
             var app = builder.Build();
 
             app.UseMiddleware<CustomExceptionMiddleware>();
+            app.UseHttpLogging();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
