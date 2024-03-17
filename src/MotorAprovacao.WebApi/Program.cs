@@ -6,16 +6,10 @@ using MotorAprovacao.WebApi.AuthServices;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using MotorAprovacao.Data.EF;
-using MotorAprovacao.Data.Repositories;
 using MotorAprovacao.WebApi.Services;
 using MotorAprovacao.Models.Entities;
 using MotorAprovacao.WebApi.ErrorHandlers;
 using MotorAprovacao.WebApi.Filters;
-using Microsoft.AspNetCore.Mvc;
-using FluentValidation.AspNetCore;
-using MotorAprovacao.WebApi.RequestDtos;
-using FluentValidation;
-using Microsoft.Extensions.Options;
 using System.Reflection;
 using Microsoft.AspNetCore.HttpLogging;
 
@@ -28,20 +22,16 @@ namespace MotorAprovacao.WebApi
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            var servicesApplicator = new ServicesApplicator(builder);
 
             builder.Services.AddControllers(options =>
             {
                 options.Filters.Add<ValidationActionFilter>();
             });
 
-            builder.Services.AddScoped<IValidator<RefundDocumentRequestDto>, RefundDocumentValidator>();
-            builder.Services.AddFluentValidationAutoValidation();
+            servicesApplicator.AddConfigure();
 
-            builder.Services.Configure<ApiBehaviorOptions>(options =>
-            {
-                options.SuppressModelStateInvalidFilter = true;
-                options.SuppressMapClientErrors = true;
-            });
+            servicesApplicator.AddValidatorsServices();
 
             builder.Services.AddHttpLogging(options =>
             {
@@ -55,11 +45,7 @@ namespace MotorAprovacao.WebApi
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection")));
 
-            builder.Services.AddScoped<IRefundDocumentRepository, RefundDocumentRepository>();
-            builder.Services.AddScoped<IRefundDocumentService,  RefundDocumentService>();
-            builder.Services.AddScoped<IApprovalEngine,  ApprovalEngine>();
-            builder.Services.AddScoped<ICategoryRulesRepository, CategoryRulesRepository>();
-            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            servicesApplicator.AddApplicationServices();
 
             //default Swagger configuration for JWT utilization
             builder.Services.AddSwaggerGen(x =>
@@ -149,10 +135,11 @@ namespace MotorAprovacao.WebApi
                 //options.AddPolicy("AdminOnly", policy=> policy.RequireRole("Administrador").RequireClaim("id" "ME"))
             });
             builder.Services.AddScoped<ITokenService, TokenService>();
-            
+
             var app = builder.Build();
 
             app.UseMiddleware<CustomExceptionMiddleware>();
+
             app.UseHttpLogging();
 
             // Configure the HTTP request pipeline.
