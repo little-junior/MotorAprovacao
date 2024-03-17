@@ -5,6 +5,7 @@ using MotorAprovacao.Models.Entities;
 using MotorAprovacao.Models.Enums;
 using MotorAprovacao.WebApi.ErrorHandlers;
 using MotorAprovacao.WebApi.RequestDtos;
+using System.Reflection.Metadata;
 
 namespace MotorAprovacao.WebApi.Services
 {
@@ -13,12 +14,13 @@ namespace MotorAprovacao.WebApi.Services
         private readonly IApprovalEngine _approvalEngine;
         private readonly IRefundDocumentRepository _refundDocumentrepository;
         private readonly ICategoryRepository _categoryRepository;
-
-        public RefundDocumentService(IApprovalEngine approvalEngine, IRefundDocumentRepository repository, ICategoryRepository categoryRepository)
+        private readonly ILogger<RefundDocumentService> _logger;
+        public RefundDocumentService(IApprovalEngine approvalEngine, IRefundDocumentRepository repository, ICategoryRepository categoryRepository, ILogger<RefundDocumentService> logger)
         {
             _approvalEngine = approvalEngine;
             _refundDocumentrepository = repository;
             _categoryRepository = categoryRepository;
+            _logger = logger;
         }
 
         public async Task<DefaultResult> ApproveDocument(Guid id)
@@ -27,13 +29,17 @@ namespace MotorAprovacao.WebApi.Services
 
             if (document == null)
             {
-                var errorResponse = new ErrorResponse(404, "Not Found", "Document not found.");
+                var message = "Document not found";
+                _logger.LogWarning($"Request ended because '{message}'");
+                var errorResponse = new ErrorResponse(404, "Not Found", "refundDocument", message);
                 return new DefaultResult(new NotFoundObjectResult(errorResponse));
             }
 
             if (document.Status != Status.OnApproval)
             {
-                var errorResponse = new ErrorResponse(409, "Conflict", "Document can only be approved while in the 'OnApproval' state.");
+                var message = "Document can only be approved while in the 'OnApproval' state";
+                _logger.LogWarning($"Request ended because '{message}'");
+                var errorResponse = new ErrorResponse(409, "Conflict", "refundDocument", message);
                 return new DefaultResult(new ConflictObjectResult(errorResponse));
             }
 
@@ -51,7 +57,9 @@ namespace MotorAprovacao.WebApi.Services
 
             if (!categoryExistence)
             {
-                var errorResponse = new ErrorResponse(400, "Bad Request", $"The value {documentDto.CategoryId} of field 'categoryId' is invalid.");
+                var message = $"The value {documentDto.CategoryId} is invalid";
+                _logger.LogWarning($"Request ended because '{message}'");
+                var errorResponse = new ErrorResponse(400, "Bad Request", "categoryId", message);
                 return new DefaultResult<RefundDocument>(new BadRequestObjectResult(errorResponse));
             }
 
@@ -71,13 +79,17 @@ namespace MotorAprovacao.WebApi.Services
 
             if (document == null)
             {
-                var errorResponse = new ErrorResponse(404, "Not Found", "Document not found.");
+                var message = "Document not found";
+                _logger.LogWarning($"Request ended because '{message}'");
+                var errorResponse = new ErrorResponse(404, "Not Found", "refundDocument", message);
                 return new DefaultResult(new NotFoundObjectResult(errorResponse));
             }
 
             if (document.Status != Status.OnApproval)
             {
-                var errorResponse = new ErrorResponse(409, "Conflict", "Document can only be disapproved while in the 'OnApproval' state.");
+                var message = "Document can only be disapproved while in the 'OnApproval' state";
+                _logger.LogWarning($"Request ended because '{message}'");
+                var errorResponse = new ErrorResponse(409, "Conflict", "refundDocument", message);
                 return new DefaultResult(new ConflictObjectResult(errorResponse));
             }
 
@@ -95,7 +107,9 @@ namespace MotorAprovacao.WebApi.Services
 
             if (document == null)
             {
-                var errorResponse = new ErrorResponse(404, "Not Found", "Document not found.");
+                var message = "Document not found";
+                _logger.LogWarning($"Request ended because '{message}'");
+                var errorResponse = new ErrorResponse(404, "Not Found", "refundDocument", message);
                 return new DefaultResult<RefundDocument>(new NotFoundObjectResult(errorResponse));
             }
 
