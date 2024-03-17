@@ -6,10 +6,10 @@ namespace MotorAprovacao.WebApi.Services
 {
     public interface IRefundDocumentService
     {
-        Task<RefundDocument> GetDocumentById(Guid id);
+        Task<DefaultResult<RefundDocument>> GetDocumentById(Guid id);
         Task<IEnumerable<RefundDocument>> GetDocumentsByStatus(Status status);
-        Task<RefundDocument> CreateDocument(RefundDocumentRequestDto documentDto);
-        Task ApproveDocument(Guid id);
-        Task DisapproveDocument(Guid id);
+        Task<DefaultResult<RefundDocument>> CreateDocument(RefundDocumentRequestDto documentDto);
+        Task<DefaultResult> ApproveDocument(Guid id);
+        Task<DefaultResult> DisapproveDocument(Guid id);
     }
 }

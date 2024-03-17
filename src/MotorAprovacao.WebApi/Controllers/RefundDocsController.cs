@@ -17,13 +17,11 @@ namespace MotorAprovacao.WebApi.Controllers
     public class RefundDocsController : ControllerBase
     {
         private readonly IRefundDocumentService _service;
-        private readonly ICategoryRepository _categoryRepository;
         private readonly ILogger<RefundDocsController> _logger;
 
-        public RefundDocsController(IRefundDocumentService service, ICategoryRepository categoryRepository, ILogger<RefundDocsController> logger)
+        public RefundDocsController(IRefundDocumentService service, ILogger<RefundDocsController> logger)
         {
             _service = service;
-            _categoryRepository = categoryRepository;
             _logger = logger;
         }
 
@@ -41,16 +39,14 @@ namespace MotorAprovacao.WebApi.Controllers
         [ProducesResponseType(typeof(ErrorModelStateResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            _logger.LogInformation($"{nameof(GetById)} requested with \n'id' = {id}");
+            _logger.LogInformation($"{nameof(GetById)} requested with 'id' = {id}");
 
             var document = await _service.GetDocumentById(id);
 
-            if (document == null)
-            {
-                return NotFound(new ErrorResponse(404, "Not Found", "Document not found."));
-            }
+            if (!document.Success)
+                return document.ErrorActionResult!;
 
-            var documentResponseDto = new RefundDocumentResponseDto(document);
+            var documentResponseDto = new RefundDocumentResponseDto(document.Value!);
 
             _logger.LogInformation($"{nameof(GetById)} responded with body {documentResponseDto}");
 
@@ -70,12 +66,7 @@ namespace MotorAprovacao.WebApi.Controllers
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetByStatus([FromQuery] Status status)
         {
-            _logger.LogInformation($"{nameof(GetByStatus)} requested with \n'status' = {status}");
-
-            if (!Enum.IsDefined(typeof(Status), status))
-            {
-                return BadRequest(new ErrorResponse(400, "Bad Request", $"The value '{status}' of parameter 'status' is invalid"));
-            }
+            _logger.LogInformation($"{nameof(GetByStatus)} requested with 'status' = {status}");
 
             var documentsByStatus = await _service.GetDocumentsByStatus(status);
 
@@ -115,18 +106,17 @@ namespace MotorAprovacao.WebApi.Controllers
         {
             _logger.LogInformation($"{nameof(PostRequestDoc)} requested with body\n{documentDto}");
 
-            var categoryExistence = await _categoryRepository.CheckExistenceById(documentDto.CategoryId);
-
-            if (!categoryExistence)
-            {
-                return BadRequest(new ErrorResponse(400, "Bad Request", $"The value {documentDto.CategoryId} of field 'categoryId' is invalid."));
-            }
-
             var createdDocument = await _service.CreateDocument(documentDto);
 
-            var documentById = await _service.GetDocumentById(createdDocument.Id);
+            if (!createdDocument.Success)
+                return createdDocument.ErrorActionResult!;
 
-            var documentResponseDto = new RefundDocumentResponseDto(documentById);
+            var documentById = await _service.GetDocumentById(createdDocument.Value!.Id);
+
+            if (!documentById.Success)
+                return documentById.ErrorActionResult!;
+
+            var documentResponseDto = new RefundDocumentResponseDto(documentById.Value!);
 
             _logger.LogInformation($"{nameof(PostRequestDoc)} responded with body");
 
@@ -151,19 +141,10 @@ namespace MotorAprovacao.WebApi.Controllers
         {
             _logger.LogInformation($"{nameof(PatchApprove)} requested with\n'id'={id}");
 
-            var document = await _service.GetDocumentById(id);
+            var approvedDocument = await _service.ApproveDocument(id);
 
-            if (document == null)
-            {
-                return NotFound(new ErrorResponse(404, "Not Found", "Document not found."));
-            }
-
-            if (document.Status != Status.OnApproval)
-            {
-                return Conflict(new ErrorResponse(409, "Conflict", "Document can only be approved while in the 'OnApproval' state."));
-            }
-
-            await _service.ApproveDocument(id);
+            if (!approvedDocument.Success)
+                return approvedDocument.ErrorActionResult!;
 
             _logger.LogInformation($"{nameof(PatchApprove)} responded");
 
@@ -187,19 +168,10 @@ namespace MotorAprovacao.WebApi.Controllers
         {
             _logger.LogInformation($"{nameof(PatchDisapprove)} requested with\n'id'={id}");
 
-            var document = await _service.GetDocumentById(id);
+            var disapprovedDocument = await _service.DisapproveDocument(id);
 
-            if (document == null)
-            {
-                return NotFound(new ErrorResponse(404, "Not Found", "Document not found."));
-            }
-
-            if (document.Status != Status.OnApproval)
-            {
-                return Conflict(new ErrorResponse(409, "Conflict", "Document can only be disapproved while in the 'OnApproval' state."));
-            }
-
-            await _service.DisapproveDocument(id);
+            if (!disapprovedDocument.Success)
+                return disapprovedDocument.ErrorActionResult!;
 
             _logger.LogInformation($"{nameof(PatchDisapprove)} responded");
 
