@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using MotorAprovacao.Data.EF;
 using MotorAprovacao.Data.Repositories;
 using MotorAprovacao.Models.Entities;
@@ -25,7 +26,7 @@ namespace MotorAprovacao.Tests
         private RefundDocumentService _documentService;
         private CategoryRulesRepository _categoryRulesRepo;
         private CategoryRepository _categoryRepo;
-
+        private ILogger<RefundDocumentService> _logger;
         /// <summary>
         /// Função que coloca todas as instancias necessárias para a testagem do código
         /// ajuda na diminuição do BoilePlate
@@ -40,7 +41,8 @@ namespace MotorAprovacao.Tests
             _categoryRepo = new CategoryRepository(_context);
             _approvalEngineMock = new ApprovalEngine(_categoryRulesRepo);
             _repoMock = new RefundDocumentRepository(_context);
-            _documentService = new RefundDocumentService(_approvalEngineMock, _repoMock, _categoryRepo);
+            _logger = Substitute.For<ILogger<RefundDocumentService>>();
+            _documentService = new RefundDocumentService(_approvalEngineMock, _repoMock, _categoryRepo, _logger);
 
 
             TestDataSeeder.SeedData(_context);
