@@ -15,7 +15,9 @@ namespace MotorAprovacao.WebApi.Filters
         {
             if (!context.ModelState.IsValid)
             {
-                context.Result = new BadRequestObjectResult(new ErrorModelStateResponse("400 - Bad Request", context.ModelState));
+                var errorResponse = new ErrorModelStateResponse(400, "Bad Request", context.ModelState);
+
+                context.Result = new BadRequestObjectResult(errorResponse);
             }
         }
     }
