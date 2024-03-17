@@ -1,4 +1,3 @@
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -6,7 +5,6 @@ using Microsoft.OpenApi.Models;
 using MotorAprovacao.WebApi.AuthServices;
 using System.Net;
 using System.Text;
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using MotorAprovacao.Data.EF;
@@ -29,13 +27,11 @@ namespace MotorAprovacao.WebApi
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            //implementação logging com dB
-            var config = new ConfigurationBuilder().AddJsonFile("appsetting.json").Build();
+            //implementaï¿½ï¿½o logging com dB
+            var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 
-            builder.Host.UseSerilog((context, configuration) => configuration.
-                                                                ReadFrom.
-                                                                Configuration(context.Configuration));
-
+            builder.Host.UseSerilog((context, configuration) =>
+                configuration.ReadFrom.Configuration(context.Configuration));
 
 
             // Add services to the container.
@@ -49,15 +45,15 @@ namespace MotorAprovacao.WebApi
                 options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection")));
 
             builder.Services.AddScoped<IRefundDocumentRepository, RefundDocumentRepository>();
-            builder.Services.AddScoped<IRefundDocumentService,  RefundDocumentService>();
-            builder.Services.AddScoped<IApprovalEngine,  ApprovalEngine>();
+            builder.Services.AddScoped<IRefundDocumentService, RefundDocumentService>();
+            builder.Services.AddScoped<IApprovalEngine, ApprovalEngine>();
             builder.Services.AddScoped<ICategoryRulesRepository, CategoryRulesRepository>();
 
 
             //default Swagger configuration for JWT utilization
             builder.Services.AddSwaggerGen(x =>
             {
-                x.SwaggerDoc("v1", new OpenApiInfo { Title = "motorAprovação", Version = "v1" });
+                x.SwaggerDoc("v1", new OpenApiInfo { Title = "motorAprovaï¿½ï¿½o", Version = "v1" });
 
                 x.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
                 {
@@ -80,18 +76,17 @@ namespace MotorAprovacao.WebApi
                                 Id = "Bearer"
                             }
                         },
-                        new string[] {}
+                        new string[] { }
                     }
                 });
             });
 
-            //Injection suggestion required for partial delivery day 12 corrigir implementação dos using
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>().
-                            AddEntityFrameworkStores<AppDbContext>
-                            ().AddDefaultTokenProviders();
+            //Injection suggestion required for partial delivery day 12 corrigir implementaï¿½ï¿½o dos using
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>
+                ().AddDefaultTokenProviders();
 
 
-            //Configuração de autenticação 
+            //Configuraï¿½ï¿½o de autenticaï¿½ï¿½o 
             var secretKey = builder.Configuration.GetSection("JWT:SecretKey").Value;
             if (string.IsNullOrEmpty(secretKey))
             {
@@ -117,24 +112,27 @@ namespace MotorAprovacao.WebApi
                     ValidAudience = builder.Configuration["JWT:ValidAudience"],
                     ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
                     IssuerSigningKey = new SymmetricSecurityKey(
-                                            Encoding.UTF8.GetBytes(secretKey))
-
+                        Encoding.UTF8.GetBytes(secretKey))
                 };
             });
 
             builder.Services.AddAuthorization(options =>
             {
                 options.AddPolicy("ManagerOnly", policy => policy.RequireRole("Gerente"));
-                options.AddPolicy("TraineeOnly", policy => policy.RequireRole("Estagiário(a)"));
+                options.AddPolicy("TraineeOnly", policy => policy.RequireRole("Estagiï¿½rio(a)"));
                 //options.AddPolicy("AdminOnly", policy=> policy.RequireRole("Administrador").RequireClaim("id" "ME"))
             });
             builder.Services.AddScoped<ITokenService, TokenService>();
-            
+
             var app = builder.Build();
 
+            // Get the ILoggerFactory after services are built
             var loggerFactory = builder.Services?.BuildServiceProvider().GetRequiredService<ILoggerFactory>();
 
-            app.UseCustomLog(loggerFactory, builder.Configuration);
+            // Call the UseCustomLog method from your class
+            LoggingConsoleConfiguration.UseCustomLog(app, loggerFactory, builder.Configuration);
+
+
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

@@ -19,6 +19,7 @@ public class AppDbContext : IdentityDbContext
     public DbSet<RefundDocument> RefundDocuments { get; set; }
     public DbSet<CategoryRules> Rules { get; set; }
     public DbSet<Category> Categories { get; set; }
+    
     public DbSet<ApplicationUser> Users { get; set; }
 
 
@@ -75,7 +76,7 @@ public class AppDbContext : IdentityDbContext
                 new CategoryRules(3, 3, 500m, 1000m),
             });
         });
-
+        
         base.OnModelCreating(modelBuilder);
     }
 }
