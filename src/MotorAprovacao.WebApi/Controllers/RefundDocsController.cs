@@ -36,7 +36,7 @@ namespace MotorAprovacao.WebApi.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(RefundDocumentResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ErrorModelStateResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             _logger.LogInformation($"{nameof(GetById)} requested with 'id' = {id}");
@@ -100,7 +100,7 @@ namespace MotorAprovacao.WebApi.Controllers
         /// <response code="400">At least one field in the Refund Document Request Body is invalid</response>
         [HttpPost]
         [ProducesResponseType(typeof(RefundDocumentResponseDto), StatusCodes.Status201Created)]
-        [ProducesResponseType(typeof(ErrorModelStateResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         [TypeFilter(typeof(ValidationActionFilter))]
         public async Task<IActionResult> PostRequestDoc([FromBody] RefundDocumentRequestDto documentDto)
         {
@@ -134,7 +134,7 @@ namespace MotorAprovacao.WebApi.Controllers
         /// <response code="409">Refund Document could not be updated</response>
         [HttpPatch("{id}/approve")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(typeof(ErrorModelStateResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
         public async Task<IActionResult> PatchApprove([FromRoute] Guid id)
@@ -161,7 +161,7 @@ namespace MotorAprovacao.WebApi.Controllers
         /// <response code="409">Refund Document could not be updated</response>
         [HttpPatch("{id}/disapprove")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(typeof(ErrorModelStateResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
         public async Task<IActionResult> PatchDisapprove([FromRoute] Guid id)
