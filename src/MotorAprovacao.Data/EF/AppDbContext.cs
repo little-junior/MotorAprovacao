@@ -7,7 +7,7 @@ using System.Reflection.Emit;
 
 namespace MotorAprovacao.Data.EF;
 
-public class AppDbContext : IdentityDbContext <ApplicationUser>
+public class AppDbContext : IdentityDbContext 
 {
     const int MaxCharsByDocumentoDescription = 200;
     const int MaxCharsByCategory = 70;
@@ -78,9 +78,14 @@ public class AppDbContext : IdentityDbContext <ApplicationUser>
             });
         });
 
+        modelBuilder.Entity<IdentityUser>(builder =>
+        {
+            builder.Property<string>("RefreshToken");
+            builder.Property<DateTime>("RefreshTokenExpiryTime");
+        }
+        );
+         
 
-        //modelBuilder.Entity<IdentityUser>().Property<string>("RefreshToken");
-        //modelBuilder.Entity<IdentityUser>().Property<DateTime>("RefreshTokenExpiryTime");
 
         base.OnModelCreating(modelBuilder);
 
