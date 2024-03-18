@@ -9,7 +9,7 @@ namespace MotorAprovacao.WebApi.Logging
 {
     public static class LoggingConfiguration 
     {
-        public static void UseCustomLog(this IApplicationBuilder app, ILoggerFactory loggerFactory, IConfiguration configuration)
+        public static void UseCustomLog(IApplicationBuilder app, ILoggerFactory loggerFactory, IConfiguration configuration)
         {
             var loggerConfiguration = new LoggerConfiguration()
                 .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Information)
