@@ -8,6 +8,7 @@ using MotorAprovacao.WebApi.Filters;
 using MotorAprovacao.WebApi.RequestDtos;
 using MotorAprovacao.WebApi.ResponseDtos;
 using MotorAprovacao.WebApi.Services;
+using System.ComponentModel.DataAnnotations;
 
 namespace MotorAprovacao.WebApi.Controllers
 {
@@ -48,7 +49,7 @@ namespace MotorAprovacao.WebApi.Controllers
 
             var documentResponseDto = new RefundDocumentResponseDto(documentResult.Value!);
 
-            _logger.LogInformation($"{nameof(GetById)} responded with body {documentResponseDto}");
+            _logger.LogInformation($"{nameof(GetById)} responded with body");
 
             return Ok(documentResponseDto);
         }
@@ -59,10 +60,10 @@ namespace MotorAprovacao.WebApi.Controllers
         /// <para>Values: 0 - OnApproval, 1 - Approved, 2 - Disapproved</para>
         /// </param>
         /// <param name="orderBy">Selector item to order the list
-        /// <para>Values: total, date</para>
+        /// <para>Values: total (default), date</para>
         /// </param>
         /// <param name="order">Order to be showed
-        /// <para>Values: asc, desc</para>
+        /// <para>Values: asc (default), desc</para>
         /// </param>
         /// <returns>A list of Refund Documents</returns>
         /// <response code="200">Returns the list of Refund Documents</response>
@@ -70,7 +71,7 @@ namespace MotorAprovacao.WebApi.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(List<RefundDocumentResponseDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetByStatus([FromQuery] Status status, [FromQuery] string orderBy="total", [FromQuery] string order="asc")
+        public async Task<IActionResult> GetByStatus([FromQuery, Required] Status status, [FromQuery] string orderBy="total", [FromQuery] string order="asc")
         {
             _logger.LogInformation($"{nameof(GetByStatus)} requested with 'status' = {status}");
 
@@ -107,7 +108,7 @@ namespace MotorAprovacao.WebApi.Controllers
         [TypeFilter(typeof(ValidationActionFilter))]
         public async Task<IActionResult> PostRequestDoc([FromBody] RefundDocumentRequestDto documentDto)
         {
-            _logger.LogInformation($"{nameof(PostRequestDoc)} requested with body\n{documentDto}");
+            _logger.LogInformation($"{nameof(PostRequestDoc)} requested with body");
 
             var createdDocumentResult = await _service.CreateDocument(documentDto);
 
@@ -142,7 +143,7 @@ namespace MotorAprovacao.WebApi.Controllers
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
         public async Task<IActionResult> PatchApprove([FromRoute] Guid id)
         {
-            _logger.LogInformation($"{nameof(PatchApprove)} requested with\n'id'={id}");
+            _logger.LogInformation($"{nameof(PatchApprove)} requested with 'id' = {id}");
 
             var approvedDocumentResult = await _service.ApproveDocument(id);
 
@@ -169,7 +170,7 @@ namespace MotorAprovacao.WebApi.Controllers
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
         public async Task<IActionResult> PatchDisapprove([FromRoute] Guid id)
         {
-            _logger.LogInformation($"{nameof(PatchDisapprove)} requested with\n'id'={id}");
+            _logger.LogInformation($"{nameof(PatchDisapprove)} requested with 'id' = {id}");
 
             var disapprovedDocumentResult = await _service.DisapproveDocument(id);
 
