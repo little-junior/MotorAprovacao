@@ -11,7 +11,7 @@ using MotorAprovacao.Models.Entities;
 using MotorAprovacao.WebApi.ErrorHandlers;
 using MotorAprovacao.WebApi.Filters;
 using System.Reflection;
-using Microsoft.AspNetCore.HttpLogging;
+using MotorAprovacao.WebApi.Middlewares;
 
 namespace MotorAprovacao.WebApi
 {
@@ -32,11 +32,6 @@ namespace MotorAprovacao.WebApi
             servicesApplicator.AddConfigure();
 
             servicesApplicator.AddValidatorsServices();
-
-            builder.Services.AddHttpLogging(options =>
-            {
-                options.LoggingFields = HttpLoggingFields.All;
-            });
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -139,8 +134,7 @@ namespace MotorAprovacao.WebApi
             var app = builder.Build();
 
             app.UseMiddleware<CustomExceptionMiddleware>();
-
-            app.UseHttpLogging();
+            app.UseMiddleware<CustomHttpLoggingMiddleware>();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
