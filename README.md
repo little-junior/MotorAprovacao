@@ -25,6 +25,9 @@ Ao automatizar o processo de aprovação com um motor de decisão baseado em reg
 - ``Entity Framework Core``
 - ``Banco de Dados PostgreSQL``
 - ``Paradigma de orientação a objetos``
+- ``xUnit, NSubstitute e FluentAssertions``
+- ``Serilog``
+- ``JWTBearer``
 
 
 ![Badge em Desenvolvimento](http://img.shields.io/static/v1?label=STATUS&message=EM%20DESENVOLVIMENTO&color=GREEN&style=for-the-badge)
