@@ -19,22 +19,26 @@ namespace MotorAprovacao.WebApi.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<AuthController> _logger;
 
-        public AuthController(ITokenService tokenService,
-                              UserManager<ApplicationUser> userManager,
-                              RoleManager<IdentityRole> roleManager,
-                              IConfiguration configuration)
+        public AuthController(ITokenService tokenService, 
+                              UserManager<ApplicationUser> userManager, 
+                              RoleManager<IdentityRole> roleManager, 
+                              IConfiguration configuration, 
+                              ILogger<AuthController> logger)
         {
             _tokenService = tokenService;
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
+            _logger = logger;
         }
 
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDto)
         {
+            
             var user = await _userManager.FindByNameAsync(loginDto.UserName!);
 
             if (user is not null && await _userManager.CheckPasswordAsync(user, loginDto.Password))
