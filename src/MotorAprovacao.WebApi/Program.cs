@@ -71,7 +71,7 @@ namespace MotorAprovacao.WebApi
                 });
             });
 
-            builder.Services.AddIdentity<IdentityUser, IdentityRole>().
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>().
                             AddEntityFrameworkStores<AppDbContext>
                             ().AddDefaultTokenProviders();
 

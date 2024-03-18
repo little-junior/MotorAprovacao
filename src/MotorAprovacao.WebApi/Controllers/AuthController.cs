@@ -1,7 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using MotorAprovacao.Data.EF;
 using MotorAprovacao.Models.Entities;
+
+
+//using MotorAprovacao.Models.Entities;
 using MotorAprovacao.WebApi.AuthDTOs;
 using MotorAprovacao.WebApi.AuthServices;
 using System.IdentityModel.Tokens.Jwt;
@@ -18,7 +22,7 @@ namespace MotorAprovacao.WebApi.Controllers
         private readonly ITokenService _tokenService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IConfiguration _configuration;
+        private readonly IConfiguration _config;
 
         public AuthController(ITokenService tokenService,
                               UserManager<ApplicationUser> userManager,
@@ -28,7 +32,7 @@ namespace MotorAprovacao.WebApi.Controllers
             _tokenService = tokenService;
             _userManager = userManager;
             _roleManager = roleManager;
-            _configuration = configuration;
+            _config = configuration;
         }
 
         [HttpPost]
@@ -52,14 +56,15 @@ namespace MotorAprovacao.WebApi.Controllers
                     authClaims.Add(new Claim(ClaimTypes.Role, userRole));
                 }
 
-                var token = _tokenService.GenerateAccessToken(authClaims, _configuration);
+                var token = _tokenService.GenerateAccessToken(authClaims, _config);
                 var refreshToken = _tokenService.GenerateRefreshToken();
 
-                _ = int.TryParse(_configuration["JWT:RefreshTokenValidityInMinutes"],
+                _ = int.TryParse(_config["JWT:RefreshTokenValidityInMinutes"],
                                     out int refreshTokenValidityInMinutes);
 
                 user.RefreshTokenExpiryTime = DateTime.Now.AddMinutes(refreshTokenValidityInMinutes);
                 user.RefreshToken = refreshToken;
+                
 
                 await _userManager.UpdateAsync(user);
 
@@ -138,7 +143,7 @@ namespace MotorAprovacao.WebApi.Controllers
                 return BadRequest();
             }
 
-            ApplicationUser user = new()
+             ApplicationUser user = new()
             {
                 Email = registerDto.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
@@ -170,7 +175,7 @@ namespace MotorAprovacao.WebApi.Controllers
             string? refreshToken = tokenDto.RefreshToken ??
                 throw new ArgumentException(nameof(tokenDto));
 
-            var principal = _tokenService.GetPricipalFromExpiredToken(accessToken!, _configuration);
+            var principal = _tokenService.GetPricipalFromExpiredToken(accessToken!, _config);
 
             if (principal == null)
             {
@@ -185,7 +190,7 @@ namespace MotorAprovacao.WebApi.Controllers
                 return BadRequest("Acesso inválido!");
             }
 
-            var newAccessToken = _tokenService.GenerateAccessToken(principal.Claims.ToList(), _configuration);
+            var newAccessToken = _tokenService.GenerateAccessToken(principal.Claims.ToList(), _config);
             var newRefreshToken = _tokenService.GenerateRefreshToken();
 
             user.RefreshToken = newRefreshToken;
