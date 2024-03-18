@@ -130,7 +130,7 @@ namespace MotorAprovacao.WebApi
             var loggerFactory = builder.Services?.BuildServiceProvider().GetRequiredService<ILoggerFactory>();
 
             // Call the UseCustomLog method from your class
-            //LoggingConsoleConfiguration.UseCustomLog(app, loggerFactory, builder.Configuration);
+            LoggingConfiguration.UseCustomLog(app, loggerFactory, builder.Configuration);
 
 
 
