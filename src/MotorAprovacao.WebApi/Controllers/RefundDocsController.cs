@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using MotorAprovacao.Data.Repositories;
 using MotorAprovacao.Models.Entities;
@@ -35,6 +36,7 @@ namespace MotorAprovacao.WebApi.Controllers
         /// <response code="404">Refund Document not found</response>
         /// <response code="400">Id format is invalid</response>
         [HttpGet("{id}")]
+        [Authorize(Policy = "ManagerOnly, TraineeOnly")]
         [ProducesResponseType(typeof(RefundDocumentResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
@@ -69,6 +71,7 @@ namespace MotorAprovacao.WebApi.Controllers
         /// <response code="200">Returns the list of Refund Documents</response>
         /// <response code="400">Status value is invalid</response>
         [HttpGet]
+        [Authorize(Policy = "ManagerOnly, TraineeOnly")]
         [ProducesResponseType(typeof(List<RefundDocumentResponseDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetByStatus([FromQuery, Required] Status status, [FromQuery] string orderBy="total", [FromQuery] string order="asc")
@@ -103,6 +106,7 @@ namespace MotorAprovacao.WebApi.Controllers
         /// <response code="201">Returns the newly created Refund Document</response>
         /// <response code="400">At least one field in the Refund Document Request Body is invalid</response>
         [HttpPost]
+        [Authorize(Policy = "ManagerOnly, TraineeOnly")]
         [ProducesResponseType(typeof(RefundDocumentResponseDto), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         [TypeFilter(typeof(ValidationActionFilter))]
@@ -137,6 +141,7 @@ namespace MotorAprovacao.WebApi.Controllers
         /// <response code="404">Refund Document not found</response>
         /// <response code="409">Refund Document could not be updated</response>
         [HttpPatch("{id}/approve")]
+        [Authorize(Policy = "ManagerOnly")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
@@ -164,6 +169,7 @@ namespace MotorAprovacao.WebApi.Controllers
         /// <response code="404">Refund Document not found</response>
         /// <response code="409">Refund Document could not be updated</response>
         [HttpPatch("{id}/disapprove")]
+        [Authorize(Policy = "ManagerOnly")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]

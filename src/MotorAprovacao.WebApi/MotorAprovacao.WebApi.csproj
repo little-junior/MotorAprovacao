@@ -7,36 +7,47 @@
 		<InvariantGlobalization>false</InvariantGlobalization>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<NoWarn>$(NoWarn);1591</NoWarn>
+		<UserSecretsId>db60f02b-5a37-4bc9-9ea5-64ba34f8e22b</UserSecretsId>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="FluentValidation" Version="11.9.0" />
-		<PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.2" />
-		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.2" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.2" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.2">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.2">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.2" />
-		<PackageReference Include="SharpGrip.FluentValidation.AutoValidation.Mvc" Version="1.4.0" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-	</ItemGroup>
+  <ItemGroup>
+	<PackageReference Include="FluentValidation" Version="11.9.0" />
+	<PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.2" />
+    <PackageReference Include="Serilog.AspNetCore" Version="8.0.1" />
+    <PackageReference Include="Serilog.Enrichers.Context" Version="4.6.5" />
+    <PackageReference Include="Serilog.Enrichers.CorrelationId" Version="3.0.1" />
+    <PackageReference Include="Serilog.Enrichers.Environment" Version="2.3.0" />
+    <PackageReference Include="Serilog.Enrichers.Process" Version="2.0.2" />
+    <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
+    <PackageReference Include="Serilog.Exceptions" Version="8.4.0" />
+    <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0" />
+    <PackageReference Include="Serilog.Sinks.PeriodicBatching" Version="4.0.1" />
+    <PackageReference Include="Serilog.Sinks.Postgresql.Alternative" Version="4.0.3" />
+    <PackageReference Include="SerilogMetrics" Version="2.1.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\MotorAprovacao.Data\MotorAprovacao.Data.csproj" />
-		<ProjectReference Include="..\MotorAprovacao.Models\MotorAprovacao.Models.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MotorAprovacao.Data\MotorAprovacao.Data.csproj" />
+    <ProjectReference Include="..\MotorAprovacao.Models\MotorAprovacao.Models.csproj" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\MotorAprovacao.Data\MotorAprovacao.Data.csproj" />
-		<ProjectReference Include="..\MotorAprovacao.Models\MotorAprovacao.Models.csproj" />
-	</ItemGroup>
-
+  <ItemGroup>
+    <ProjectReference Include="..\MotorAprovacao.Data\MotorAprovacao.Data.csproj" />
+    <ProjectReference Include="..\MotorAprovacao.Models\MotorAprovacao.Models.csproj" />
+  </ItemGroup>
 
 </Project>

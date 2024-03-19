@@ -71,7 +71,7 @@ namespace MotorAprovacao.WebApi
                 x.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
                 {
                     Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey,
+                    Type = SecuritySchemeType.Http,
                     Scheme = "Bearer",
                     BearerFormat = "JWT",
                     In = ParameterLocation.Header,
@@ -89,7 +89,7 @@ namespace MotorAprovacao.WebApi
                                 Id = "Bearer"
                             }
                         },
-                        new string[] {}
+                        Array.Empty<string>()
                     }
                 });
 
@@ -97,10 +97,11 @@ namespace MotorAprovacao.WebApi
                 x.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
             });
 
-            //Injection suggestion required for partial delivery day 12 corrigir implementação dos using
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>().
-                            AddEntityFrameworkStores<AppDbContext>
-                            ().AddDefaultTokenProviders();
+            builder.Services.AddScoped<ITokenService, TokenService>();
+
+            builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+                            .AddEntityFrameworkStores<AppDbContext>()
+                            .AddDefaultTokenProviders();
 
 
             //Configuração de autenticação 
@@ -136,12 +137,10 @@ namespace MotorAprovacao.WebApi
 
             builder.Services.AddAuthorization(options =>
             {
-                options.AddPolicy("ManagerOnly", policy => policy.RequireRole("Gerente"));
-                options.AddPolicy("TraineeOnly", policy => policy.RequireRole("Estagiário(a)"));
-                //options.AddPolicy("AdminOnly", policy=> policy.RequireRole("Administrador").RequireClaim("id" "ME"))
+                options.AddPolicy("ManagerOnly", policy => policy.RequireRole("Gestor"));
+                options.AddPolicy("TraineeOnly", policy => policy.RequireRole("Estagiario"));
             });
-            builder.Services.AddScoped<ITokenService, TokenService>();
-
+            
             var app = builder.Build();
 
             app.UseMiddleware<CustomExceptionMiddleware>();
@@ -154,14 +153,13 @@ namespace MotorAprovacao.WebApi
                 app.UseSwaggerUI();
             }
 
-            //app.UseHttpsRedirection();
-
-            //to do verificar a posição correta, deve ficar antes de autorizacao
             app.UseCors(AllowedOrigins);
-            //app.UseAuthorization();
+            app.UseHttpsRedirection();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.MapControllers();
-
+            
             app.Run();
         }
     }
