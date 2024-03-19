@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MotorAprovacao.WebApi.AuthDTOs;
@@ -97,8 +98,7 @@ namespace MotorAprovacao.WebApi.Controllers
 
         [HttpPost]
         [Route("userRole")]
-        [Authorize]
-        //[Authorize(Policy = "ManagerOnly")] 
+        [Authorize(Policy = "ManagerOnly")] 
         public async Task<IActionResult> AddUserToRole(string email, string roleName)
         {
             var user = await _userManager.FindByEmailAsync(email);
@@ -124,7 +124,7 @@ namespace MotorAprovacao.WebApi.Controllers
 
         [HttpPost]
         [Route("registerDto")]
-
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         //[Authorize(Policy = "ManagerOnly")]
 
         public async Task<IActionResult> Register([FromBody] RegisterDTO registerDto)

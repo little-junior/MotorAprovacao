@@ -84,7 +84,7 @@ namespace MotorAprovacao.WebApi
                 throw new ArgumentException("Invalid secret key!");
             }
 
-
+            
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -108,11 +108,9 @@ namespace MotorAprovacao.WebApi
                 };
             });
 
-            builder.Services.AddAuthorization(options =>
-            {
-                options.AddPolicy("ManagerOnly", policy => policy.RequireRole("Gerente"));
-                options.AddPolicy("TraineeOnly", policy => policy.RequireRole("Estagiario"));
-            });
+            /*builder.Services.AddAuthorizationBuilder()
+                .AddPolicy("ManagerOnly", policy => policy.RequireRole("Gerente")),
+                .AddPolicy("TraineeOnly", policy => policy.RequireRole("Estagiario")); */
             
             var app = builder.Build();
 
@@ -121,12 +119,13 @@ namespace MotorAprovacao.WebApi
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
-            }
+            } 
 
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
+            
             app.Run();
         }
     }
