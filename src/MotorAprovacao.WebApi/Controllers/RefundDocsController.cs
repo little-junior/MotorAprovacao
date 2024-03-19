@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using MotorAprovacao.Data.Repositories;
 using MotorAprovacao.Models.Entities;
@@ -32,12 +33,17 @@ namespace MotorAprovacao.WebApi.Controllers
         /// <param name="id">Id of Refund Document to return</param>
         /// <returns>A Refund Document</returns>
         /// <response code="200">Returns the Refund Document</response>
-        /// <response code="404">Refund Document not found</response>
         /// <response code="400">Id format is invalid</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="403">User do not have permission to access</response>
+        /// <response code="404">Refund Document not found</response>
         [HttpGet("{id}")]
+        [Authorize(Policy = "AllRoles")]
         [ProducesResponseType(typeof(RefundDocumentResponseDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             _logger.LogInformation($"{nameof(GetById)} requested with 'id' = {id}");
@@ -68,9 +74,14 @@ namespace MotorAprovacao.WebApi.Controllers
         /// <returns>A list of Refund Documents</returns>
         /// <response code="200">Returns the list of Refund Documents</response>
         /// <response code="400">Status value is invalid</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="403">User do not have permission to access</response>
         [HttpGet]
+        [Authorize(Policy = "AllRoles")]
         [ProducesResponseType(typeof(List<RefundDocumentResponseDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> GetByStatus([FromQuery, Required] Status status, [FromQuery] string orderBy="total", [FromQuery] string order="asc")
         {
             _logger.LogInformation($"{nameof(GetByStatus)} requested with 'status' = {status}");
@@ -102,9 +113,14 @@ namespace MotorAprovacao.WebApi.Controllers
         /// <returns>A new Refund Document</returns>
         /// <response code="201">Returns the newly created Refund Document</response>
         /// <response code="400">At least one field in the Refund Document Request Body is invalid</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="403">User do not have permission to access</response>
         [HttpPost]
+        [Authorize(Policy = "AllRoles")]
         [ProducesResponseType(typeof(RefundDocumentResponseDto), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [TypeFilter(typeof(ValidationActionFilter))]
         public async Task<IActionResult> PostRequestDoc([FromBody] RefundDocumentRequestDto documentDto)
         {
@@ -134,11 +150,16 @@ namespace MotorAprovacao.WebApi.Controllers
         /// <returns></returns>
         /// <response code="204">Refund Document's Status was updated</response>
         /// <response code="400">Id format is invalid</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="403">User do not have permission to access</response>
         /// <response code="404">Refund Document not found</response>
         /// <response code="409">Refund Document could not be updated</response>
         [HttpPatch("{id}/approve")]
+        [Authorize(Policy = "ManagerOnly")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
         public async Task<IActionResult> PatchApprove([FromRoute] Guid id)
@@ -161,11 +182,16 @@ namespace MotorAprovacao.WebApi.Controllers
         /// <returns></returns>
         /// <response code="204">Refund Document's Status was updated</response>
         /// <response code="400">Id format is invalid</response>
+        /// <response code="401">Not authorized</response>
+        /// <response code="403">User do not have permission to access</response>
         /// <response code="404">Refund Document not found</response>
         /// <response code="409">Refund Document could not be updated</response>
         [HttpPatch("{id}/disapprove")]
+        [Authorize(Policy = "ManagerOnly")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
         public async Task<IActionResult> PatchDisapprove([FromRoute] Guid id)
