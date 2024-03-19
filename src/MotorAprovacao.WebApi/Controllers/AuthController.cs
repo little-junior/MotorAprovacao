@@ -34,9 +34,9 @@ namespace MotorAprovacao.WebApi.Controllers
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDto)
         {
-            var user = await _userManager.FindByNameAsync(loginDto.UserName!);
+            var user = await _userManager.FindByNameAsync(loginDto.UserName);
 
-            if (user is not null && await _userManager.CheckPasswordAsync(user, loginDto.Password!))
+            if (user != null && await _userManager.CheckPasswordAsync(user, loginDto.Password!))
             {
                 var userRoles = await _userManager.GetRolesAsync(user);
                 var authClaims = new List<Claim>
@@ -51,9 +51,7 @@ namespace MotorAprovacao.WebApi.Controllers
                     authClaims.Add(new Claim(ClaimTypes.Role, userRole));
                 }
 
-                var token = _tokenService.GenerateAccessToken(authClaims, _config);
-
-                await _userManager.UpdateAsync(user);
+                var token = _tokenService.GenerateAccessToken(authClaims);
 
                 return Ok(new
                 {
@@ -72,6 +70,7 @@ namespace MotorAprovacao.WebApi.Controllers
         [Authorize]
 
         //[Authorize(Policy = "ManagerOnly")]
+
 
         public async Task<IActionResult> CreateRole(string roleNome)
         {
@@ -98,7 +97,8 @@ namespace MotorAprovacao.WebApi.Controllers
 
         [HttpPost]
         [Route("userRole")]
-        [Authorize(Policy = "ManagerOnly")] 
+        [Authorize]
+        //[Authorize(Policy = "ManagerOnly")]
         public async Task<IActionResult> AddUserToRole(string email, string roleName)
         {
             var user = await _userManager.FindByEmailAsync(email);
@@ -124,7 +124,8 @@ namespace MotorAprovacao.WebApi.Controllers
 
         [HttpPost]
         [Route("registerDto")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         //[Authorize(Policy = "ManagerOnly")]
 
         public async Task<IActionResult> Register([FromBody] RegisterDTO registerDto)

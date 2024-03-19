@@ -28,20 +28,6 @@ namespace MotorAprovacao.WebApi
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-
-            builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection")));
-
-            builder.Services.AddScoped<IRefundDocumentRepository, RefundDocumentRepository>();
-            builder.Services.AddScoped<IRefundDocumentService,  RefundDocumentService>();
-            builder.Services.AddScoped<IApprovalEngine,  ApprovalEngine>();
-            builder.Services.AddScoped<ICategoryRulesRepository, CategoryRulesRepository>();
-            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-            builder.Services.AddScoped<ITokenService, TokenService>();
-
-
-            //default Swagger configuration for JWT utilization
             builder.Services.AddSwaggerGen(x =>
             {
                 x.SwaggerDoc("v1", new OpenApiInfo { Title = "motorAprovação", Version = "v1" });
@@ -49,7 +35,7 @@ namespace MotorAprovacao.WebApi
                 x.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
                 {
                     Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey,
+                    Type = SecuritySchemeType.Http,
                     Scheme = "Bearer",
                     BearerFormat = "JWT",
                     In = ParameterLocation.Header,
@@ -67,10 +53,24 @@ namespace MotorAprovacao.WebApi
                                 Id = "Bearer"
                             }
                         },
-                        new string[] {}
+                        Array.Empty<string>()
                     }
                 });
             });
+
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection")));
+
+            builder.Services.AddScoped<IRefundDocumentRepository, RefundDocumentRepository>();
+            builder.Services.AddScoped<IRefundDocumentService,  RefundDocumentService>();
+            builder.Services.AddScoped<IApprovalEngine,  ApprovalEngine>();
+            builder.Services.AddScoped<ICategoryRulesRepository, CategoryRulesRepository>();
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<ITokenService, TokenService>();
+
+
+            //default Swagger configuration for JWT utilization
+           
 
             builder.Services.AddIdentity<IdentityUser, IdentityRole>().
                             AddEntityFrameworkStores<AppDbContext>
@@ -108,9 +108,9 @@ namespace MotorAprovacao.WebApi
                 };
             });
 
-            /*builder.Services.AddAuthorizationBuilder()
-                .AddPolicy("ManagerOnly", policy => policy.RequireRole("Gerente")),
-                .AddPolicy("TraineeOnly", policy => policy.RequireRole("Estagiario")); */
+            builder.Services.AddAuthorizationBuilder()
+                .AddPolicy("ManagerOnly", policy => policy.RequireRole("Gerente"))
+                .AddPolicy("TraineeOnly", policy => policy.RequireRole("Estagiario")); 
             
             var app = builder.Build();
 
