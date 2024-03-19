@@ -67,7 +67,7 @@ namespace MotorAprovacao.WebApi.Controllers
 
         [HttpPost]
         [Route("createRole")]
-        [Authorize]
+        [Authorize(Policy = "ManagerOnly")]
 
         //[Authorize(Policy = "ManagerOnly")]
 
@@ -97,8 +97,7 @@ namespace MotorAprovacao.WebApi.Controllers
 
         [HttpPost]
         [Route("userRole")]
-        [Authorize]
-        //[Authorize(Policy = "ManagerOnly")]
+        [Authorize(Policy = "ManagerOnly")]
         public async Task<IActionResult> AddUserToRole(string email, string roleName)
         {
             var user = await _userManager.FindByEmailAsync(email);
@@ -124,9 +123,7 @@ namespace MotorAprovacao.WebApi.Controllers
 
         [HttpPost]
         [Route("registerDto")]
-        [Authorize]
-        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        //[Authorize(Policy = "ManagerOnly")]
+        [Authorize(Policy = "ManagerOnly, TraineeOnly")]
 
         public async Task<IActionResult> Register([FromBody] RegisterDTO registerDto)
         {
