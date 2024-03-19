@@ -36,7 +36,7 @@ namespace MotorAprovacao.WebApi.Controllers
         /// <response code="404">Refund Document not found</response>
         /// <response code="400">Id format is invalid</response>
         [HttpGet("{id}")]
-        [Authorize(Policy = "ManagerOnly, TraineeOnly")]
+        [Authorize(Policy = "AllRoles")]
         [ProducesResponseType(typeof(RefundDocumentResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
@@ -71,7 +71,7 @@ namespace MotorAprovacao.WebApi.Controllers
         /// <response code="200">Returns the list of Refund Documents</response>
         /// <response code="400">Status value is invalid</response>
         [HttpGet]
-        [Authorize(Policy = "ManagerOnly, TraineeOnly")]
+        [Authorize(Policy = "AllRoles")]
         [ProducesResponseType(typeof(List<RefundDocumentResponseDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetByStatus([FromQuery, Required] Status status, [FromQuery] string orderBy="total", [FromQuery] string order="asc")
@@ -106,7 +106,7 @@ namespace MotorAprovacao.WebApi.Controllers
         /// <response code="201">Returns the newly created Refund Document</response>
         /// <response code="400">At least one field in the Refund Document Request Body is invalid</response>
         [HttpPost]
-        [Authorize(Policy = "ManagerOnly, TraineeOnly")]
+        [Authorize(Policy = "AllRoles")]
         [ProducesResponseType(typeof(RefundDocumentResponseDto), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         [TypeFilter(typeof(ValidationActionFilter))]
