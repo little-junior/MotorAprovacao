@@ -110,7 +110,7 @@ namespace MotorAprovacao.WebApi
 
             builder.Services.AddAuthorization(options =>
             {
-                options.AddPolicy("ManagerOnly", policy => policy.RequireRole("Gerente"));
+                options.AddPolicy("ManagerOnly", policy => policy.RequireRole("Gestor"));
                 options.AddPolicy("TraineeOnly", policy => policy.RequireRole("Estagiario"));
 
 
