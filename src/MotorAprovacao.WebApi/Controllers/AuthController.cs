@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MotorAprovacao.WebApi.AuthDTOs;
 using MotorAprovacao.WebApi.AuthServices;
@@ -59,14 +60,18 @@ namespace MotorAprovacao.WebApi.Controllers
                     Expiration = token.ValidTo
                 });
             }
-            
-                return Unauthorized();
-            
+
+            return Unauthorized();
+
         }
 
 
         [HttpPost]
         [Route("createRole")]
+        [Authorize]
+
+        //[Authorize(Policy = "ManagerOnly")]
+
         public async Task<IActionResult> CreateRole(string roleNome)
         {
             var roleExist = await _roleManager.RoleExistsAsync(roleNome);
@@ -78,13 +83,13 @@ namespace MotorAprovacao.WebApi.Controllers
                 {
                     //to do é possivel registrar logger
                     //to do ajustar retorno de status
-                    return Ok();
+                    return Ok("Função criada com sucesso");
                 }
                 else
                 {
                     //to do é possivel registrar logger
                     //to do ajustar retorno de status
-                    return BadRequest();
+                    return BadRequest("Erro na criação");
                 }
             }
             return BadRequest("Função inexistente");
@@ -92,6 +97,8 @@ namespace MotorAprovacao.WebApi.Controllers
 
         [HttpPost]
         [Route("userRole")]
+        [Authorize]
+        //[Authorize(Policy = "ManagerOnly")] 
         public async Task<IActionResult> AddUserToRole(string email, string roleName)
         {
             var user = await _userManager.FindByEmailAsync(email);
@@ -117,6 +124,9 @@ namespace MotorAprovacao.WebApi.Controllers
 
         [HttpPost]
         [Route("registerDto")]
+
+        //[Authorize(Policy = "ManagerOnly")]
+
         public async Task<IActionResult> Register([FromBody] RegisterDTO registerDto)
         {
             var userExists = await _userManager.FindByNameAsync(registerDto.UserName!);
@@ -143,7 +153,7 @@ namespace MotorAprovacao.WebApi.Controllers
             return Ok("Usuário criado com sucesso");
         }
 
-       
+
 
     }
 }

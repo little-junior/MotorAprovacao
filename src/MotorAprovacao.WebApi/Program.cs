@@ -111,7 +111,7 @@ namespace MotorAprovacao.WebApi
             builder.Services.AddAuthorization(options =>
             {
                 options.AddPolicy("ManagerOnly", policy => policy.RequireRole("Gerente"));
-                options.AddPolicy("TraineeOnly", policy => policy.RequireRole("Estagiário(a)"));
+                options.AddPolicy("TraineeOnly", policy => policy.RequireRole("Estagiario"));
             });
             
             var app = builder.Build();
@@ -123,13 +123,10 @@ namespace MotorAprovacao.WebApi
                 app.UseSwaggerUI();
             }
 
-            //app.UseHttpsRedirection();
-
-            //app.UseAuthorization();
-
-
+            app.UseHttpsRedirection();
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.MapControllers();
-
             app.Run();
         }
     }

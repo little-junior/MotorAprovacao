@@ -24,6 +24,7 @@ namespace MotorAprovacao.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Policy = "ManagerOnly")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var document = await _service.GetDocumentById(id);
@@ -56,6 +57,8 @@ namespace MotorAprovacao.WebApi.Controllers
         }
 
         [HttpPost()]
+        [Authorize]
+
         public async Task<IActionResult> PostRequestDoc([FromBody] RefundDocumentRequestDto documentDto)
         {
             if (documentDto.Total <= 0)
@@ -80,6 +83,8 @@ namespace MotorAprovacao.WebApi.Controllers
         }
 
         [HttpPatch("{id}/approve")]
+        [Authorize]
+
         public async Task<IActionResult> PatchApprove([FromRoute] Guid id)
         {
             var document = await _service.GetDocumentById(id);
@@ -100,6 +105,8 @@ namespace MotorAprovacao.WebApi.Controllers
         }
 
         [HttpPatch("{id}/disapprove")]
+        [Authorize]
+
         public async Task<IActionResult> PatchDisapprove([FromRoute] Guid id)
         {
             var document = await _service.GetDocumentById(id);
