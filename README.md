@@ -37,6 +37,49 @@ Para utilizar os endpoints da API, siga estas etapas:
 - `Etapa 2` `Enviar Solicitações`: Utilize um cliente HTTP, como Postman ou cURL, para enviar solicitações para os endpoints desejados. Inclua o token de acesso recebido no cabeçalho Authorization nas  solicitações.
 - `Etapa 3` `Processar Respostas`: Ao receber uma resposta do servidor, verifique o código de status HTTP para determinar se a solicitação foi bem-sucedida ou se houve algum erro. As respostas também podem incluir dados relevantes no corpo da resposta.
 
+## Modelo de Dados
+
+#### O modelo de dados do banco inclui quatro entidades principais:
+
+1. `RefundDocument`: Esta entidade representa um documento de reembolso submetido pelos usuários. Ela contém informações como ID único, descrição do documento, total do reembolso, categoria à qual o documento está associado, status atual do documento e data de criação.
+
+2. `Category`: Cada documento de reembolso está associado a uma categoria específica, como Alimentação, Transporte, Hospedagem, Viagem, entre outras. Essa entidade armazena o nome da categoria e seu ID único.
+
+3. `CategoryRules`: Esta entidade define as regras específicas para cada categoria. Inclui valores máximos para aprovação e desaprovação de documentos de reembolso relacionados à categoria.
+
+4. `ApplicationUser`: Essa entidade estende a funcionalidade padrão do Identity Framework para armazenar informações adicionais sobre os usuários da aplicação. Inclui dados como tokens de atualização para autenticação e tempo de expiração desses tokens.
+
+ #### Relacionamentos
+
+- Um documento de reembolso pertence a uma categoria específica, estabelecendo um relacionamento de muitos para um com a entidade Category.
+- Cada categoria possui suas próprias regras definidas na entidade CategoryRules, estabelecendo um relacionamento um para um.
+- As regras de categoria estão diretamente relacionadas com a categoria correspondente.
+
+ #### Tecnologias Utilizadas
+
+- O banco de dados é implementado utilizando o PostgreSQL, um sistema de gerenciamento de banco de dados relacional de código aberto amplamente utilizado.
+- O acesso ao banco de dados é facilitado pelo Entity Framework Core, uma estrutura ORM (Object-Relational Mapping) que simplifica o trabalho com bancos de dados relacionais em aplicativos .NET.
+
+ #### Considerações de Desempenho e Segurança
+
+- O PostgreSQL oferece recursos avançados de desempenho, escalabilidade e segurança, tornando-o uma escolha sólida para aplicativos empresariais.
+- O Entity Framework Core ajuda a mitigar preocupações de segurança, fornecendo suporte para consultas parametrizadas e prevenção de injeção de SQL.
+
+### Preparando o Banco de Dados Localmente
+
+1-`Instalação do PostgreSQL`:
+Certifique-se de ter o PostgreSQL instalado localmente. Você pode baixá-lo e instalá-lo a partir do site oficial do PostgreSQL.
+
+2-`Configuração da Conexão com o Banco de Dados`:
+No arquivo appsettings.json ou appsettings.Development.json, configure a string de conexão do banco de dados para corresponder às suas configurações locais do PostgreSQL.
+
+3-`Aplicação das Migrações`:
+Abra o terminal no diretório raiz do projeto da API e execute o seguinte comando para aplicar as migrações e atualizar o banco de dados:"dotnet ef database update"
+
+Isso criará a estrutura do banco de dados com base nas migrações fornecidas pelo Entity Framework Core.
+
+Após seguir esses passos, o banco de dados estará configurado localmente e pronto para ser utilizado pela aplicação.
+
 ## ✔️ Técnicas e tecnologias utilizadas
 
 - ``C #``
