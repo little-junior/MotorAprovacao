@@ -118,9 +118,8 @@ namespace MotorAprovacao.WebApi
 
             builder.Services.AddAuthorization(options =>
             {
-                options.AddPolicy("ManagerOnly", policy => policy.RequireRole("Gerente"));
-                options.AddPolicy("TraineeOnly", policy => policy.RequireRole("Estagi�rio(a)"));
-                //options.AddPolicy("AdminOnly", policy=> policy.RequireRole("Administrador").RequireClaim("id" "ME"))
+                options.AddPolicy("ManagerOnly", policy => policy.RequireRole("Gestor"));
+                options.AddPolicy("TraineeOnly", policy => policy.RequireRole("Estagiario"));
             });
             builder.Services.AddScoped<ITokenService, TokenService>();
 
