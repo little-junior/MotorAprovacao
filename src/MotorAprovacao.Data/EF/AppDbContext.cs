@@ -7,7 +7,7 @@ using System.Reflection.Emit;
 
 namespace MotorAprovacao.Data.EF;
 
-public class AppDbContext : IdentityDbContext<ApplicationUser>
+public class AppDbContext : IdentityDbContext<IdentityUser>
 {
     const int MaxCharsByDocumentoDescription = 200;
     const int MaxCharsByCategory = 70;
@@ -20,7 +20,6 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<RefundDocument> RefundDocuments { get; set; }
     public DbSet<CategoryRules> Rules { get; set; }
     public DbSet<Category> Categories { get; set; }
-    //public DbSet<IdentityUser> User { get; set; }
 
 
 
@@ -78,17 +77,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             });
         });
 
-        /*modelBuilder.Entity<IdentityUser>(builder =>
-        {
-            builder.Property<string>("RefreshToken");
-            builder.Property<DateTime>("RefreshTokenExpiryTime");
-        }
-        );*/
-         
-
-
         base.OnModelCreating(modelBuilder);
-        modelBuilder.Entity<ApplicationUser>().ToTable("AspNetUsers");
 
     }
 };

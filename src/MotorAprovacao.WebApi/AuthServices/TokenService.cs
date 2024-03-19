@@ -1,7 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 
 namespace MotorAprovacao.WebApi.AuthServices
@@ -13,7 +12,7 @@ namespace MotorAprovacao.WebApi.AuthServices
             var key = _config.GetSection("JWT").GetValue<string>("SecretKey") ??
                         throw new InvalidOperationException("Invalid secret key");
             
-            var privateKey = Encoding.UTF8.GetBytes(key);
+            var privateKey = Encoding.UTF32.GetBytes(key);
 
             var signingCredentials = new SigningCredentials(new SymmetricSecurityKey(privateKey),
                                       SecurityAlgorithms.HmacSha256Signature);
@@ -21,8 +20,8 @@ namespace MotorAprovacao.WebApi.AuthServices
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddMinutes(_config.GetSection("JWT")
-                                                     .GetValue<double>("TokenValidityInMinutes")),
+                Expires = DateTime.UtcNow.AddDays(_config.GetSection("JWT")
+                                                     .GetValue<double>("TokenValisityInDays")),
                 
                 Audience = _config.GetSection("JWT").GetValue<string>("ValidAudience"),
 
@@ -36,31 +35,18 @@ namespace MotorAprovacao.WebApi.AuthServices
 
             return token;
         }
-
-
-        public string GenerateRefreshToken()
-        {
-            var secureRandomBytes = new byte[128];
-
-            using var randomNumberGenerator = RandomNumberGenerator.Create();
-
-            randomNumberGenerator.GetBytes(secureRandomBytes);
-
-            var refreshToken = Convert.ToBase64String(secureRandomBytes);
-            
-            return refreshToken;
-        }
+ 
 
         public ClaimsPrincipal GetPricipalFromExpiredToken(string token, IConfiguration _config)
         {
             var secretKey = _config["JWT:SecretKey"] ??
-                             throw new InvalidOperationException("Invalid Key");
+                             throw new InvalidOperationException("Chave Inválida");
 
             var tokenValidationParameters = new TokenValidationParameters
             {
                 ValidateAudience = false,
                 ValidateIssuer = false,
-                ValidateIssuerSigningKey = false,
+                ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(
                                        Encoding.UTF8.GetBytes(secretKey)),
                 ValidateLifetime = false
@@ -75,7 +61,7 @@ namespace MotorAprovacao.WebApi.AuthServices
                                     SecurityAlgorithms.HmacSha256,
                                     StringComparison.InvariantCultureIgnoreCase)) 
             {
-                throw new SecurityTokenException("Invalid token");
+                throw new SecurityTokenException("Token Inválido");
             }
 
             return primary;

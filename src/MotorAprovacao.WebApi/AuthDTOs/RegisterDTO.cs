@@ -8,8 +8,8 @@ namespace MotorAprovacao.WebApi.AuthDTOs
         public string? UserName { get; set; }
 
         [EmailAddress]
-        [Required(ErrorMessage = "O e-mail é obrigatorio!")]
-        public string? Email { get; set; }
+        [Required(ErrorMessage = "Email do usuario é obrigatorio")]
+        public string? Email { get; set; } 
 
         [Required(ErrorMessage = "A senha é obrigatorio!")]
         public string? Password { get; set; }

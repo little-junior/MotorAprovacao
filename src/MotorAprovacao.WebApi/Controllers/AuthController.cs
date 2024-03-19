@@ -1,17 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using MotorAprovacao.Data.EF;
-using MotorAprovacao.Models.Entities;
-
-
-//using MotorAprovacao.Models.Entities;
 using MotorAprovacao.WebApi.AuthDTOs;
 using MotorAprovacao.WebApi.AuthServices;
 using System.IdentityModel.Tokens.Jwt;
-using System.Runtime.CompilerServices;
 using System.Security.Claims;
-//using MotorAprovacao.Models
 
 namespace MotorAprovacao.WebApi.Controllers
 {
@@ -20,12 +12,13 @@ namespace MotorAprovacao.WebApi.Controllers
     public class AuthController : ControllerBase
     {
         private readonly ITokenService _tokenService;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _config;
 
-        public AuthController(ITokenService tokenService,
-                              UserManager<ApplicationUser> userManager,
+        public AuthController(
+                              ITokenService tokenService,
+                              UserManager<IdentityUser> userManager,
                               RoleManager<IdentityRole> roleManager,
                               IConfiguration configuration)
         {
@@ -41,15 +34,15 @@ namespace MotorAprovacao.WebApi.Controllers
         {
             var user = await _userManager.FindByNameAsync(loginDto.UserName!);
 
-            if (user is not null && await _userManager.CheckPasswordAsync(user, loginDto.Password))
+            if (user is not null && await _userManager.CheckPasswordAsync(user, loginDto.Password!))
             {
                 var userRoles = await _userManager.GetRolesAsync(user);
                 var authClaims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(ClaimTypes.Email, user.Email!),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        };
+                {
+                    new Claim(ClaimTypes.Name, user.UserName!),
+                    new Claim(ClaimTypes.Email, user.Email!),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                };
 
                 foreach (var userRole in userRoles)
                 {
@@ -57,28 +50,18 @@ namespace MotorAprovacao.WebApi.Controllers
                 }
 
                 var token = _tokenService.GenerateAccessToken(authClaims, _config);
-                var refreshToken = _tokenService.GenerateRefreshToken();
-
-                _ = int.TryParse(_config["JWT:RefreshTokenValidityInMinutes"],
-                                    out int refreshTokenValidityInMinutes);
-
-                user.RefreshTokenExpiryTime = DateTime.Now.AddMinutes(refreshTokenValidityInMinutes);
-                user.RefreshToken = refreshToken;
-                
 
                 await _userManager.UpdateAsync(user);
 
                 return Ok(new
                 {
                     Token = new JwtSecurityTokenHandler().WriteToken(token),
-                    RefreshToken = refreshToken,
                     Expiration = token.ValidTo
                 });
             }
-            else
-            {
+            
                 return Unauthorized();
-            }
+            
         }
 
 
@@ -136,14 +119,14 @@ namespace MotorAprovacao.WebApi.Controllers
         [Route("registerDto")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO registerDto)
         {
-            var userExists = await _userManager.FindByNameAsync(registerDto.UserName);
+            var userExists = await _userManager.FindByNameAsync(registerDto.UserName!);
 
             if (userExists != null)
             {
-                return BadRequest();
+                return BadRequest("Usuario já existente");
             }
 
-             ApplicationUser user = new()
+            IdentityUser user = new()
             {
                 Email = registerDto.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
@@ -151,58 +134,16 @@ namespace MotorAprovacao.WebApi.Controllers
             };
 
 
-            var result = await _userManager.CreateAsync(user, registerDto.Password);
+            var result = await _userManager.CreateAsync(user, registerDto.Password!);
             if (!result.Succeeded)
             {
-                return BadRequest();
+                return BadRequest("Erro na criação");
             }
 
-            return Ok(result);
+            return Ok("Usuário criado com sucesso");
         }
 
-        [HttpPost]
-        [Route("refresh")]
-        public async Task<IActionResult> RefreshToken(TokenDTO tokenDto)
-        {
-            if (tokenDto is null)
-            {
-                return BadRequest("Acesso inválido!");
-            }
-
-            string? accessToken = tokenDto.AcessToken ??
-               throw new ArgumentException(nameof(tokenDto));
-
-            string? refreshToken = tokenDto.RefreshToken ??
-                throw new ArgumentException(nameof(tokenDto));
-
-            var principal = _tokenService.GetPricipalFromExpiredToken(accessToken!, _config);
-
-            if (principal == null)
-            {
-                return BadRequest("Acesso inválido!");
-            }
-
-            string userName = principal.Identity.Name;
-            var user = await _userManager.FindByNameAsync(userName);
-
-            if (user == null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
-            {
-                return BadRequest("Acesso inválido!");
-            }
-
-            var newAccessToken = _tokenService.GenerateAccessToken(principal.Claims.ToList(), _config);
-            var newRefreshToken = _tokenService.GenerateRefreshToken();
-
-            user.RefreshToken = newRefreshToken;
-
-            await _userManager.UpdateAsync(user);
-
-            return Ok(new
-            {
-                accessToken = new JwtSecurityTokenHandler().WriteToken(newAccessToken),
-                refreshToken = newRefreshToken,
-            });
-        }
+       
 
     }
 }

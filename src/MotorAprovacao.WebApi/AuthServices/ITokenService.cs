@@ -8,7 +8,6 @@ namespace MotorAprovacao.WebApi.AuthServices
         JwtSecurityToken GenerateAccessToken(IEnumerable<Claim> claims,
                                              IConfiguration _config);
 
-        string GenerateRefreshToken();
 
         ClaimsPrincipal GetPricipalFromExpiredToken(string token,
                                                     IConfiguration _config);

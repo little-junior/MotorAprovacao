@@ -72,7 +72,7 @@ namespace MotorAprovacao.WebApi
                 });
             });
 
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>().
+            builder.Services.AddIdentity<IdentityUser, IdentityRole>().
                             AddEntityFrameworkStores<AppDbContext>
                             ().AddDefaultTokenProviders();
 
@@ -112,9 +112,7 @@ namespace MotorAprovacao.WebApi
             {
                 options.AddPolicy("ManagerOnly", policy => policy.RequireRole("Gerente"));
                 options.AddPolicy("TraineeOnly", policy => policy.RequireRole("Estagiário(a)"));
-                //options.AddPolicy("AdminOnly", policy=> policy.RequireRole("Administrador").RequireClaim("id" "ME"))
             });
-            builder.Services.AddScoped<ITokenService, TokenService>();
             
             var app = builder.Build();
 
