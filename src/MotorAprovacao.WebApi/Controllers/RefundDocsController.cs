@@ -24,7 +24,7 @@ namespace MotorAprovacao.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Policy = "ManagerOnly")]
+        [Authorize(Policy = "ManagerOnly, TraineeOnly")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var document = await _service.GetDocumentById(id);
@@ -40,6 +40,7 @@ namespace MotorAprovacao.WebApi.Controllers
         }
 
         [HttpGet()]
+        [Authorize(Policy = "ManagerOnly, TraineeOnly")]
         public async Task<IActionResult> GetByStatus([FromQuery]int status)
         {
             if (!Enum.IsDefined(typeof(Status), status))
@@ -57,8 +58,7 @@ namespace MotorAprovacao.WebApi.Controllers
         }
 
         [HttpPost()]
-        [Authorize]
-
+        [Authorize(Policy = "ManagerOnly")]
         public async Task<IActionResult> PostRequestDoc([FromBody] RefundDocumentRequestDto documentDto)
         {
             if (documentDto.Total <= 0)
@@ -83,7 +83,7 @@ namespace MotorAprovacao.WebApi.Controllers
         }
 
         [HttpPatch("{id}/approve")]
-        [Authorize]
+        [Authorize(Policy = "ManagerOnly")]
 
         public async Task<IActionResult> PatchApprove([FromRoute] Guid id)
         {
@@ -105,7 +105,7 @@ namespace MotorAprovacao.WebApi.Controllers
         }
 
         [HttpPatch("{id}/disapprove")]
-        [Authorize]
+        [Authorize(Policy = "ManagerOnly")]
 
         public async Task<IActionResult> PatchDisapprove([FromRoute] Guid id)
         {
