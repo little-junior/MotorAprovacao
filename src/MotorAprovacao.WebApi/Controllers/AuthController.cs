@@ -17,17 +17,20 @@ namespace MotorAprovacao.WebApi.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _config;
+        private readonly ILogger<AuthController> _logger;
 
         public AuthController(
                               ITokenService tokenService,
                               UserManager<IdentityUser> userManager,
                               RoleManager<IdentityRole> roleManager,
-                              IConfiguration configuration)
+                              IConfiguration configuration,
+                              ILogger<AuthController> logger)
         {
             _tokenService = tokenService;
             _userManager = userManager;
             _roleManager = roleManager;
             _config = configuration;
+            _logger = logger;
         }
 
         [HttpPost]
@@ -59,16 +62,14 @@ namespace MotorAprovacao.WebApi.Controllers
                     Expiration = token.ValidTo
                 });
             }
-
-            return Unauthorized();
+            _logger.LogInformation($"Failed login attempt for user: {loginDto.UserName}");
+            return Unauthorized("Invalid username or password");
 
         }
 
 
         [HttpPost]
         [Route("createRole")]
-        //[Authorize(Policy = "ManagerOnly")]
-
 
         public async Task<IActionResult> CreateRole(string roleNome)
         {
@@ -79,23 +80,22 @@ namespace MotorAprovacao.WebApi.Controllers
 
                 if (roleResult.Succeeded)
                 {
-                    //to do é possivel registrar logger
-                    //to do ajustar retorno de status
-                    return Ok("Função criada com sucesso");
+                    _logger.LogInformation($"Role {roleNome} created successfully");
+                    return Ok("Role created successfully");
                 }
                 else
                 {
-                    //to do é possivel registrar logger
-                    //to do ajustar retorno de status
-                    return BadRequest("Erro na criação");
+                    _logger.LogError($"Error creating role {roleNome}: " +
+                                     $"{string.Join(", ", roleResult.Errors.Select
+                                     (e => e.Description))}");
+                    return BadRequest("Error creating role");
                 }
             }
-            return BadRequest("Função inexistente");
+            return BadRequest("Role already exists");
         }
 
         [HttpPost]
         [Route("userRole")]
-        //[Authorize(Policy = "ManagerOnly")]
         public async Task<IActionResult> AddUserToRole(string email, string roleName)
         {
             var user = await _userManager.FindByEmailAsync(email);
@@ -104,24 +104,23 @@ namespace MotorAprovacao.WebApi.Controllers
                 var result = await _userManager.AddToRoleAsync(user, roleName);
                 if (result.Succeeded)
                 {
-                    //to do é possivel registrar logger
-                    //to do ajustar retorno de status
+                    _logger.LogInformation($"User {email} added to role {roleName}");
                     return Ok();
                 }
                 else
                 {
-                    //to do é possivel registrar logger
-                    //to do ajustar retorno de status
-                    return BadRequest();
+                    _logger.LogError($"Error adding user {email} to role {roleName}:" +
+                                     $"{string.Join(", ", result.Errors.Select
+                                     (e => e.Description))}");
+                    return BadRequest("Error adding user to role");
                 }
             }
-            //to do ajustar retorno do erro
-            return BadRequest();
+            _logger.LogInformation($"User {email} not found");
+            return BadRequest("User not found");
         }
 
         [HttpPost]
         [Route("registerDto")]
-        //[Authorize(Policy = "AllRoles")]
 
         public async Task<IActionResult> Register([FromBody] RegisterDTO registerDto)
         {
@@ -129,7 +128,7 @@ namespace MotorAprovacao.WebApi.Controllers
 
             if (userExists != null)
             {
-                return BadRequest("Usuario já existente");
+                return BadRequest("User already exists");
             }
 
             IdentityUser user = new()
@@ -143,10 +142,13 @@ namespace MotorAprovacao.WebApi.Controllers
             var result = await _userManager.CreateAsync(user, registerDto.Password!);
             if (!result.Succeeded)
             {
-                return BadRequest("Erro na criação");
+                _logger.LogError($"Error registering user {registerDto.UserName}:" +
+                                                     $"{string.Join(", ", result.Errors.Select
+                                                     (e => e.Description))}");
+                return BadRequest("Error registering user");
             }
-
-            return Ok("Usuário criado com sucesso");
+            _logger.LogInformation($"User {registerDto.UserName} regisered successfuly");
+            return Ok("User registered successfully");
         }
     }
 }
