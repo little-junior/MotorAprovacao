@@ -80,6 +80,47 @@ Isso criará a estrutura do banco de dados com base nas migrações fornecidas p
 
 Após seguir esses passos, o banco de dados estará configurado localmente e pronto para ser utilizado pela aplicação.
 
+## Autenticação na API MotorAprovacao
+A API MotorAprovacao utiliza autenticação baseada em tokens JWT (JSON Web Tokens) para garantir a segurança das operações e proteger os recursos da aplicação. Este sistema de autenticação é implementado usando o ASP.NET Core Identity e os serviços de autenticação e autorização fornecidos pelo framework.
+
+#### Funcionamento da Autenticação:
+1- Login de Usuário:
+- Os usuários devem fornecer suas credenciais de login (nome de usuário e senha) para autenticar-se na API.
+- Após a autenticação bem-sucedida, a API gera um token JWT contendo informações de identificação do usuário e roles associadas.
+
+2-Geração de Token JWT:
+- O token JWT gerado durante o login contém informações como nome de usuário, email e roles do usuário.
+- Esse token é assinado com uma chave secreta definida na configuração da aplicação, garantindo sua integridade e autenticidade.
+
+3-Utilização do Token JWT:
+- O token JWT gerado é enviado pelo servidor como resposta ao login bem-sucedido.
+- A API valida o token recebido para verificar a identidade do usuário e suas permissões antes de processar a solicitação.
+
+### Passo a Passo para Utilizar a Autenticação:
+1- Registrar um Novo Usuário:
+
+- Envie uma solicitação HTTP POST para /api/auth/registerDto contendo os detalhes do novo usuário (nome de usuário, email e senha).
+- A API criará o usuário e retornará uma resposta indicando se a operação foi bem-sucedida.
+
+2- Autenticar-se na API:
+
+- Envie uma solicitação HTTP POST para /api/auth/login contendo o nome de usuário e senha.
+- Se as credenciais forem válidas, a API retornará um token JWT.
+- Guarde este token, pois ele será usado para autorizar solicitações futuras.
+
+3- Utilizar o Token JWT:
+
+- Em cada solicitação subsequente à API, inclua o token JWT nos cabeçalhos HTTP usando o esquema de autorização Bearer.
+- O token será validado pela API para garantir que o usuário esteja autenticado e tenha permissão para acessar os recursos solicitados.
+
+4- Acesso a Recursos Protegidos:
+
+- A API fornece endpoints protegidos que requerem autenticação.
+- Você pode acessar esses recursos fornecendo o token JWT válido nos cabeçalhos HTTP de suas solicitações.
+
+### Possibilidade de Expansão:
+Embora atualmente a API tenha políticas de autorização para Gestor e Estagiário, ela foi projetada para permitir a expansão das funções e a inclusão de novas políticas de autorização conforme necessário. Isso significa que novas roles e políticas podem ser adicionadas facilmente para atender aos requisitos futuros da aplicação.
+
 ## ✔️ Técnicas e tecnologias utilizadas
 
 - ``C #``
