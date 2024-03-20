@@ -81,7 +81,7 @@ namespace MotorAprovacao.WebApi.Controllers
                 if (roleResult.Succeeded)
                 {
                     _logger.LogInformation($"Role {roleNome} created successfully");
-                    return Ok("Role cerated successfully");
+                    return Ok("Role created successfully");
                 }
                 else
                 {
@@ -128,7 +128,7 @@ namespace MotorAprovacao.WebApi.Controllers
 
             if (userExists != null)
             {
-                return BadRequest("User alrealdy exists");
+                return BadRequest("User already exists");
             }
 
             IdentityUser user = new()
